@@ -11,27 +11,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ============================================================
-      # 1. Simpan keadaan main sekarang
-      # ============================================================
-      - name: Clone current repository
+      # 1. Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Save current repository
-        run: |
-          set -e
-
-          mkdir -p /tmp/original-repo
-
-          rsync -a \
-            --exclude='.git' \
-            ./ /tmp/original-repo/
-
-      # ============================================================
       # 2. Clone Linux Kernel 5.4.255
-      # ============================================================
       - name: Clone Linux Kernel 5.4.255
         run: |
           set -e
@@ -44,70 +30,32 @@ jobs:
             https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git \
             /tmp/linux-5.4.255
 
-      # ============================================================
-      # 3. Push Linux 5.4.255 ke main
-      # ============================================================
+      # 3. Push Linux Kernel 5.4.255 ke main
       - name: Push Linux 5.4.255 to main
         run: |
           set -e
 
-          rm -rf ./* ./.??* 2>/dev/null || true
+          echo "Copy Linux Kernel 5.4.255..."
 
           rsync -a \
+            --delete \
             --exclude='.git' \
             /tmp/linux-5.4.255/ \
             ./
 
-          git add -A
+          echo "Check git repository..."
+          git status
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git commit -m "Import Linux Kernel 5.4.255"
-
-          git push origin HEAD:main
-
-      # ============================================================
-      # 4. Clone repo dotywrt/kernel-5.4.255
-      #    selepas Step 3 berjaya
-      # ============================================================
-      - name: Clone dotywrt/kernel-5.4.255
-        run: |
-          set -e
-
-          rm -rf /tmp/dotywrt-kernel
-
-          git clone \
-            https://github.com/dotywrt/kernel-5.4.255.git \
-            /tmp/dotywrt-kernel
-
-      # ============================================================
-      # 5. Restore/update main dengan kandungan asal repo
-      #    supaya perubahan kedua jelas dalam GitHub History
-      # ============================================================
-      - name: Push repository update to main
-        run: |
-          set -e
-
-          git fetch origin main
-          git checkout main
-          git reset --hard origin/main
-
-          rsync -a --delete \
-            --exclude='.git' \
-            /tmp/original-repo/ \
-            ./
 
           git add -A
 
           if git diff --cached --quiet; then
-            echo "Tiada perubahan untuk commit kedua."
+            echo "Tiada perubahan."
             exit 0
           fi
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git commit -m "Update dotywrt kernel repository"
+          git commit -m "Import Linux Kernel 5.4.255"
 
           git push origin HEAD:main
