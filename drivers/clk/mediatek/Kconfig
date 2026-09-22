@@ -363,3 +363,108 @@ config COMMON_CLK_MT8516_AUDSYS
 	  This driver supports MediaTek MT8516 audsys clocks.
 
 endmenu
+
+# DOTY-VENDOR-BOOT-PARITY COMMON_CLK_MT6890 BEGIN
+config COMMON_CLK_MT6890
+	bool "Clock driver for MediaTek MT6890"
+	select COMMON_CLK_MEDIATEK
+	---help---
+	  This driver supports MediaTek MT6890 basic clocks,
+	  which is used to control basic clock output.
+	  If you wish to use clock resources from the MT6890 SOC,
+	  say Y. Otherwise, pls say N.
+# DOTY-VENDOR-BOOT-PARITY COMMON_CLK_MT6890 END
+
+# DOTY-VENDOR-BOOT-PARITY COMMON_CLK_MT6890_AUDIOSYS BEGIN
+config COMMON_CLK_MT6890_AUDIOSYS
+	bool "Clock driver for MediaTek MT6890 audiosys"
+	depends on COMMON_CLK_MT6890
+	---help---
+	  This driver supports MediaTek MT6890 audiosys clocks,
+	  which is used to control audiosys clock output.
+	  If you wish to use clock resources from the audiosys device,
+	  say Y. Otherwise, say N.
+# DOTY-VENDOR-BOOT-PARITY COMMON_CLK_MT6890_AUDIOSYS END
+
+# DOTY-VENDOR-BOOT-PARITY COMMON_CLK_MT6890_DBGSYS_DEM BEGIN
+config COMMON_CLK_MT6890_DBGSYS_DEM
+	bool "Clock driver for MediaTek MT6890 dbgsys_dem"
+	depends on COMMON_CLK_MT6890
+	---help---
+	  This driver supports MediaTek MT6890 dbgsys_dem clocks,
+	  which is used to control dbgsys_dem clock output.
+	  If you wish to use clock resources from the dbgsys_dem device,
+	  say Y. Otherwise, say N.
+# DOTY-VENDOR-BOOT-PARITY COMMON_CLK_MT6890_DBGSYS_DEM END
+
+# DOTY-VENDOR-BOOT-PARITY COMMON_CLK_MT6890_GCE BEGIN
+config COMMON_CLK_MT6890_GCE
+	bool "Clock driver for MediaTek MT6890 gce"
+	depends on COMMON_CLK_MT6890
+	---help---
+	  This driver supports MediaTek MT6890 gce clocks,
+	  which is used to control gce clock output.
+	  If you wish to use clock resources from the gce device,
+	  say Y. Otherwise, say N.
+# DOTY-VENDOR-BOOT-PARITY COMMON_CLK_MT6890_GCE END
+
+# DOTY-VENDOR-BOOT-PARITY COMMON_CLK_MT6890_IMP_IIC_WRAP_E BEGIN
+config COMMON_CLK_MT6890_IMP_IIC_WRAP_E
+	bool "Clock driver for MediaTek MT6890 imp_iic_wrap_e"
+	depends on COMMON_CLK_MT6890
+	---help---
+	  This driver supports MediaTek MT6890 imp_iic_wrap_e clocks,
+	  which is used to control imp_iic_wrap_e clock output.
+	  If you wish to use clock resources from the imp_iic_wrap_e device,
+	  say Y. Otherwise, say N.
+# DOTY-VENDOR-BOOT-PARITY COMMON_CLK_MT6890_IMP_IIC_WRAP_E END
+
+# DOTY-VENDOR-BOOT-PARITY COMMON_CLK_MT6890_MFGSYS BEGIN
+config COMMON_CLK_MT6890_MFGSYS
+	bool "Clock driver for MediaTek MT6890 mfgsys"
+	depends on COMMON_CLK_MT6890 && MTK_GPU_SUPPORT
+	---help---
+	  This driver supports MediaTek MT6890 mfgsys clocks,
+	  which is used to control mfgsys clock output.
+	  If you wish to use clock resources from the mfgsys device,
+	  say Y. Otherwise, say N.
+# DOTY-VENDOR-BOOT-PARITY COMMON_CLK_MT6890_MFGSYS END
+
+# DOTY-VENDOR-BOOT-PARITY COMMON_CLK_MT6890_MMSYS_CONFIG BEGIN
+config COMMON_CLK_MT6890_MMSYS_CONFIG
+	bool "Clock driver for MediaTek MT6890 mmsys_config"
+	depends on COMMON_CLK_MT6890
+	---help---
+	  This driver supports MediaTek MT6890 mmsys_config clocks,
+	  which is used to control mmsys_config clock output.
+	  If you wish to use clock resources from the mmsys_config device,
+	  say Y. Otherwise, say N.
+# DOTY-VENDOR-BOOT-PARITY COMMON_CLK_MT6890_MMSYS_CONFIG END
+
+# DOTY MT6890 Stage-2C-A vendor parity
+config COMMON_CLK_MTK_FREQ_HOPPING
+	tristate "MediaTek FREQHOPPING driver"
+	help
+	  FREQHOPPING driver support for MediaTek SOC
+	  If you want to use MediaTek FREQHOPPING driver,
+	  say Y or M here.
+	  If unsure, say N.
+
+# DOTY MT6890 Stage-2C-A vendor parity
+config COMMON_CLK_MTK_FREQ_HOPPING_SUBSYS
+	bool
+	depends on COMMON_CLK_MTK_FREQ_HOPPING_SSPM || COMMON_CLK_MTK_FREQ_HOPPING_MCUPM
+	help
+	  If FREQHOPPING HW is controlled by other processor,
+	  such as SSPM, this should be set.
+
+# DOTY MT6890 Stage-2C-A vendor parity
+config COMMON_CLK_MTK_FREQ_HOPPING_MCUPM
+	bool "Mediatek FREQHOPPING controlled by MCUPM"
+	depends on COMMON_CLK_MTK_FREQ_HOPPING && MTK_TINYSYS_MCUPM_SUPPORT
+	select COMMON_CLK_MTK_FREQ_HOPPING_SUBSYS
+	help
+	  If FREQHOPPING HW is controlled by MCUPM,
+	  say Y here.
+	  Otherwise, say N.
+	  Enabling this config will auto set COMMON_CLK_MTK_FREQ_HOPPING_SUBSYS

@@ -36,3 +36,8 @@ $(obj)/ti-emif-asm-offsets.h: $(obj)/emif-asm-offsets.s FORCE
 
 targets += emif-asm-offsets.s
 clean-files += ti-emif-asm-offsets.h
+
+# Ported from MT6890 Linux 4.19
+
+# MT6890 Linux 5.4: required built-in MediaTek memory providers
+obj-y += mediatek/

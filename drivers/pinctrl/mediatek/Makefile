@@ -19,3 +19,17 @@ obj-$(CONFIG_PINCTRL_MT8173)	+= pinctrl-mt8173.o
 obj-$(CONFIG_PINCTRL_MT8183)	+= pinctrl-mt8183.o
 obj-$(CONFIG_PINCTRL_MT8516)	+= pinctrl-mt8516.o
 obj-$(CONFIG_PINCTRL_MT6397)	+= pinctrl-mt6397.o
+
+# AW1000/Fibocom legacy GPIO compatibility
+obj-y += pinctrl-mtk-common-v2_debug.o
+
+# AW1000 Stage2 fallback: vendor tree has no PINCTRL_MTK_V2 symbol
+obj-y += pinctrl-mtk-common-v2.o
+
+# DOTY-VENDOR-BOOT-PARITY PINCTRL_MT6880 BEGIN
+obj-$(CONFIG_PINCTRL_MT6880)	+= pinctrl-mt6880.o
+# DOTY-VENDOR-BOOT-PARITY PINCTRL_MT6880 END
+
+# DOTY-VENDOR-BOOT-PARITY PINCTRL_MTK_V2 BEGIN
+obj-$(CONFIG_PINCTRL_MTK_V2)	+= pinctrl-mtk-common-v2.o
+# DOTY-VENDOR-BOOT-PARITY PINCTRL_MTK_V2 END

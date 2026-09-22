@@ -152,3 +152,45 @@ config SND_SOC_MTK_BTCVSD
 	  BT encoded data to/from BT firmware.
 	  Select Y if you have such device.
 	  If unsure select "N".
+
+# DOTY-AW1000-STAGE3: restored from local 4.19 donor
+config SND_SOC_MT6880
+        tristate "ASoC support for Mediatek MT6880 chip"
+        depends on ARCH_MEDIATEK
+        select SND_SOC_MEDIATEK
+        select SND_SOC_MTK_SRAM
+        select SND_SOC_MTK_SMART_PHONE
+        help
+          This adds ASoC driver for Mediatek MT6880 boards
+          that can be used with other codecs.
+          Select Y if you have such device.
+          If unsure select "N".
+
+# DOTY-AW1000-STAGE3: restored from local 4.19 donor
+config SND_SOC_MT6880_MT6359
+        tristate "ASoc Audio driver for MT6880 with MT6359 codec"
+        depends on SND_SOC_MT6880 && MTK_PMIC_WRAP
+        select SND_SOC_MT6359
+        help
+          This adds ASoC driver for Mediatek MT6880 boards
+          with the MT6359 codecs.
+          Select Y if you have such device.
+          If unsure select "N".
+
+# DOTY-AW1000-STAGE3: restored from local 4.19 donor
+config SND_SOC_MTK_SMART_PHONE
+	tristate "Mediatek Smart Phone PCM Operation"
+	help
+	  Mediatek PCM operation which is specific for
+	  smart phone product.
+	  Select Y if product is smart phone.
+	  If unsure select "N".
+
+# DOTY-AW1000-STAGE3: restored from local 4.19 donor
+config SND_SOC_MTK_SRAM
+	tristate "Mediatek Audio SRAM Management"
+	help
+	  Mediatek Audio SRAM management for
+	  normal mode and compact mode.
+	  Select Y if you use this SRAM management.
+	  If unsure select "N".

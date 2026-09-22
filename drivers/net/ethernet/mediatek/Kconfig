@@ -15,3 +15,9 @@ config NET_MEDIATEK_SOC
 	  MediaTek SoC family.
 
 endif #NET_VENDOR_MEDIATEK
+
+# DOTY KCONFIG SAFE v5 NET_MEDIATEK_DBG BEGIN
+config NET_MEDIATEK_DBG
+	bool "Mediatek Ethernet debug interface"
+	depends on NET_MEDIATEK_SOC
+# DOTY KCONFIG SAFE v5 NET_MEDIATEK_DBG END

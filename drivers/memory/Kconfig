@@ -139,13 +139,13 @@ config JZ4780_NEMC
 	  memory devices such as NAND and SRAM.
 
 config MTK_SMI
-	bool
-	depends on ARCH_MEDIATEK || COMPILE_TEST
+	tristate "Support Memory Control for Multimedia"
+	default y
+	depends on HAVE_MTK_SMI
 	help
 	  This driver is for the Memory Controller module in MediaTek SoCs,
 	  mainly help enable/disable iommu and control the power domain and
 	  clocks for each local arbiter.
-
 config DA8XX_DDRCTL
 	bool "Texas Instruments da8xx DDR2/mDDR driver"
 	depends on ARCH_DAVINCI_DA8XX
@@ -167,3 +167,14 @@ source "drivers/memory/samsung/Kconfig"
 source "drivers/memory/tegra/Kconfig"
 
 endif
+source "drivers/memory/mediatek/Kconfig"
+
+# DOTY-VENDOR-BOOT-PARITY HAVE_MTK_SMI BEGIN
+config HAVE_MTK_SMI
+	bool
+	default y if ARCH_MEDIATEK && COMMON_CLK_MT6890
+	depends on ARCH_MEDIATEK || COMPILE_TEST
+	help
+	  This driver is for the Memory Controller module in MediaTek SoCs.
+	  It will be select if MTK_SMI is on.
+# DOTY-VENDOR-BOOT-PARITY HAVE_MTK_SMI END

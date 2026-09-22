@@ -246,6 +246,11 @@ static const struct mtk_smi_larb_gen mtk_smi_larb_mt8183 = {
 				      /* IPU0 | IPU1 | CCU */
 };
 
+/* DOTY MT6880 SMI larb: vendor uses generic gen2 port programming. */
+static const struct mtk_smi_larb_gen mtk_smi_larb_mt6880 = {
+	.config_port = mtk_smi_larb_config_port_gen2_general,
+};
+
 static const struct of_device_id mtk_smi_larb_of_ids[] = {
 	{
 		.compatible = "mediatek,mt8173-smi-larb",
@@ -262,6 +267,10 @@ static const struct of_device_id mtk_smi_larb_of_ids[] = {
 	{
 		.compatible = "mediatek,mt8183-smi-larb",
 		.data = &mtk_smi_larb_mt8183
+	},
+	{
+		.compatible = "mediatek,mt6880-smi-larb",
+		.data = &mtk_smi_larb_mt6880,
 	},
 	{}
 };
@@ -395,6 +404,11 @@ static const struct mtk_smi_common_plat mtk_smi_common_mt8183 = {
 		    F_MMU1_LARB(7),
 };
 
+/* DOTY MT6880 SMI common: vendor binding adapted to Linux 5.4 semantics. */
+static const struct mtk_smi_common_plat mtk_smi_common_mt6880 = {
+	.gen = MTK_SMI_GEN2,
+};
+
 static const struct of_device_id mtk_smi_common_of_ids[] = {
 	{
 		.compatible = "mediatek,mt8173-smi-common",
@@ -411,6 +425,10 @@ static const struct of_device_id mtk_smi_common_of_ids[] = {
 	{
 		.compatible = "mediatek,mt8183-smi-common",
 		.data = &mtk_smi_common_mt8183,
+	},
+	{
+		.compatible = "mediatek,mt6880-smi-common",
+		.data = &mtk_smi_common_mt6880,
 	},
 	{}
 };

@@ -14,6 +14,52 @@
 #include "mtk-afe-fe-dai.h"
 #include "mtk-base-afe.h"
 
+/* DOTY-MTK-REGMAP-FWD-LINUX54-V2 */
+static int mtk_regmap_update_bits(struct regmap *map, int reg,
+			   unsigned int mask,
+			   unsigned int val, int shift);
+
+
+/* DOTY-MTK-MEMIF-ENABLE-DISABLE-LINUX54-mtk_memif_set_disable-BEGIN */
+/* Exact implementation restored from local vendor Linux 4.19. */
+int mtk_memif_set_disable(struct mtk_base_afe *afe, int id)
+{
+	struct mtk_base_afe_memif *memif = &afe->memif[id];
+
+	if (memif->data->enable_shift < 0) {
+		dev_warn(afe->dev, "%s(), error, id %d, enable_shift < 0\n",
+			 __func__, id);
+		return 0;
+	}
+	return mtk_regmap_update_bits(afe->regmap,
+			      memif->data->enable_reg,
+			      1, 0,
+			      memif->data->enable_shift);
+}
+EXPORT_SYMBOL_GPL(mtk_memif_set_disable);
+/* DOTY-MTK-MEMIF-ENABLE-DISABLE-LINUX54-mtk_memif_set_disable-END */
+
+
+/* DOTY-MTK-MEMIF-ENABLE-DISABLE-LINUX54-mtk_memif_set_enable-BEGIN */
+/* Exact implementation restored from local vendor Linux 4.19. */
+int mtk_memif_set_enable(struct mtk_base_afe *afe, int id)
+{
+	struct mtk_base_afe_memif *memif = &afe->memif[id];
+
+	if (memif->data->enable_shift < 0) {
+		dev_warn(afe->dev, "%s(), error, id %d, enable_shift < 0\n",
+			 __func__, id);
+		return 0;
+	}
+	return mtk_regmap_update_bits(afe->regmap,
+			      memif->data->enable_reg,
+			      1, 1,
+			      memif->data->enable_shift);
+}
+EXPORT_SYMBOL_GPL(mtk_memif_set_enable);
+/* DOTY-MTK-MEMIF-ENABLE-DISABLE-LINUX54-mtk_memif_set_enable-END */
+
+
 #define AFE_BASE_END_OFFSET 8
 
 static int mtk_regmap_update_bits(struct regmap *map, int reg,
@@ -360,6 +406,86 @@ int mtk_afe_dai_resume(struct snd_soc_dai *dai)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(mtk_afe_dai_resume);
+
+
+
+/* DOTY-MTK-MEMIF-DMA-API-LINUX54-BEGIN */
+/* Exact donor 4.19 helper body, renamed only to avoid replacing the native Linux 5.4 helper. */
+static int doty_mtk_regmap_update_bits4(struct regmap *map, int reg,
+				  unsigned int mask, unsigned int val)
+{
+	if (reg < 0)
+		return 0;
+	return regmap_update_bits(map, reg, mask, val);
+}
+
+int mtk_memif_set_addr(struct mtk_base_afe *afe, int id,
+		       unsigned char *dma_area,
+		       dma_addr_t dma_addr,
+		       size_t dma_bytes)
+{
+	struct mtk_base_afe_memif *memif = &afe->memif[id];
+	int msb_at_bit33 = upper_32_bits(dma_addr) ? 1 : 0;
+	unsigned int phys_buf_addr = lower_32_bits(dma_addr);
+	unsigned int phys_buf_addr_upper_32 = upper_32_bits(dma_addr);
+
+	memif->dma_area = dma_area;
+	memif->dma_addr = dma_addr;
+	memif->dma_bytes = dma_bytes;
+
+	/* start */
+	mtk_regmap_write(afe->regmap, memif->data->reg_ofs_base,
+			 phys_buf_addr);
+	/* end */
+	if (memif->data->reg_ofs_end)
+		mtk_regmap_write(afe->regmap,
+				 memif->data->reg_ofs_end,
+				 phys_buf_addr + dma_bytes - 1);
+	else
+		mtk_regmap_write(afe->regmap,
+				 memif->data->reg_ofs_base +
+				 AFE_BASE_END_OFFSET,
+				 phys_buf_addr + dma_bytes - 1);
+
+	/* set start, end, upper 32 bits */
+	if (memif->data->reg_ofs_base_msb) {
+		mtk_regmap_write(afe->regmap, memif->data->reg_ofs_base_msb,
+				 phys_buf_addr_upper_32);
+		mtk_regmap_write(afe->regmap,
+				 memif->data->reg_ofs_end_msb,
+				 phys_buf_addr_upper_32);
+	}
+
+	/* set MSB to 33-bit */
+	if (memif->data->msb_reg >= 0)
+		doty_mtk_regmap_update_bits4(afe->regmap, memif->data->msb_reg,
+				1 << memif->data->msb_shift,
+				msb_at_bit33 << memif->data->msb_shift);
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(mtk_memif_set_addr);
+
+int mtk_memif_set_pbuf_size(struct mtk_base_afe *afe,
+			    int id, int pbuf_size)
+{
+	const struct mtk_base_memif_data *memif_data = afe->memif[id].data;
+
+	if (memif_data->pbuf_mask_shift == 0 ||
+	    memif_data->minlen_mask_shift == 0)
+		return 0;
+
+	doty_mtk_regmap_update_bits4(afe->regmap, memif_data->pbuf_reg,
+			       memif_data->pbuf_mask_shift,
+			       pbuf_size << memif_data->pbuf_shift);
+
+	doty_mtk_regmap_update_bits4(afe->regmap, memif_data->minlen_reg,
+			       memif_data->minlen_mask_shift,
+			       pbuf_size << memif_data->minlen_shift);
+	return 0;
+}
+EXPORT_SYMBOL_GPL(mtk_memif_set_pbuf_size);
+/* DOTY-MTK-MEMIF-DMA-API-LINUX54-END */
 
 MODULE_DESCRIPTION("Mediatek simple fe dai operator");
 MODULE_AUTHOR("Garlic Tseng <garlic.tseng@mediatek.com>");

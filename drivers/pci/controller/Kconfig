@@ -290,3 +290,14 @@ config PCI_HYPERV_INTERFACE
 
 source "drivers/pci/controller/dwc/Kconfig"
 endmenu
+
+# DOTY-VENDOR-BOOT-PARITY PCIE_MEDIATEK_GEN3 BEGIN
+config PCIE_MEDIATEK_GEN3
+	tristate "MediaTek PCIe GEN3 MAC controller"
+	depends on ARCH_MEDIATEK || COMPILE_TEST
+	depends on OF
+	depends on PCI_MSI_IRQ_DOMAIN
+	help
+	  Say Y here if you want to enable PCIe GEN3 MAC controller
+	  support on MediaTek SoCs.
+# DOTY-VENDOR-BOOT-PARITY PCIE_MEDIATEK_GEN3 END

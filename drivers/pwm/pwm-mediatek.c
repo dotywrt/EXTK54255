@@ -307,6 +307,12 @@ static const struct pwm_mediatek_of_data mt8516_pwm_data = {
 	.pwm45_fixup = false,
 };
 
+/* DOTY MT6880 PWM SoC data, adapted to current Linux 5.4 PWM ABI. */
+static const struct pwm_mediatek_of_data mt6880_pwm_data = {
+	.num_pwms = 7,
+	.pwm45_fixup = false,
+};
+
 static const struct of_device_id pwm_mediatek_of_match[] = {
 	{ .compatible = "mediatek,mt2712-pwm", .data = &mt2712_pwm_data },
 	{ .compatible = "mediatek,mt7622-pwm", .data = &mt7622_pwm_data },
@@ -314,6 +320,7 @@ static const struct of_device_id pwm_mediatek_of_match[] = {
 	{ .compatible = "mediatek,mt7628-pwm", .data = &mt7628_pwm_data },
 	{ .compatible = "mediatek,mt7629-pwm", .data = &mt7629_pwm_data },
 	{ .compatible = "mediatek,mt8516-pwm", .data = &mt8516_pwm_data },
+	{ .compatible = "mediatek,mt6880-pwm", .data = &mt6880_pwm_data },
 	{ },
 };
 MODULE_DEVICE_TABLE(of, pwm_mediatek_of_match);

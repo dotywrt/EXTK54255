@@ -13,6 +13,23 @@
 #include "mtk-afe-platform-driver.h"
 #include "mtk-base-afe.h"
 
+/* DOTY-MTK-WORD-SIZE-ALIGN-V3-BEGIN */
+/* Exact implementation restored from local vendor Linux 4.19 donor. */
+unsigned int word_size_align(unsigned int in_size)
+{
+	unsigned int align_size;
+
+	/* sram is device memory,need word size align,
+	 * 8 byte for 64 bit platform
+	 * [3:0] = 4'h0 for the convenience of the hardware implementation
+	 */
+	align_size = in_size & 0xFFFFFFF0;
+	return align_size;
+}
+EXPORT_SYMBOL_GPL(word_size_align);
+/* DOTY-MTK-WORD-SIZE-ALIGN-V3-END */
+
+
 int mtk_afe_combine_sub_dai(struct mtk_base_afe *afe)
 {
 	struct mtk_base_afe_dai *dai;

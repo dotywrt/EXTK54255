@@ -25,6 +25,10 @@
 
 #define POSTDIV_MASK		0x7
 
+
+/* DOTY MT6890 Stage-2C-A4 v2 vendor FHCTL provider */
+bool (*mtk_fh_set_rate)(int pll_id, unsigned long dds, int postdiv) = NULL;
+EXPORT_SYMBOL(mtk_fh_set_rate);
 /* default 7 bits integer, can be overridden with pcwibits. */
 #define INTEGER_BITS		7
 

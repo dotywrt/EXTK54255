@@ -50,3 +50,11 @@ obj-$(CONFIG_SC27XX_EFUSE)	+= nvmem-sc27xx-efuse.o
 nvmem-sc27xx-efuse-y		:= sc27xx-efuse.o
 obj-$(CONFIG_NVMEM_ZYNQMP)	+= nvmem_zynqmp_nvmem.o
 nvmem_zynqmp_nvmem-y		:= zynqmp_nvmem.o
+
+# DOTY MT6890 Stage-3A MT6359 EFUSE parity
+obj-$(CONFIG_MT6359_EFUSE)	+= nvmem-mt6359-efuse.o
+# DOTY MT6890 Stage-3A2 exact donor composite mapping
+nvmem-mt6359-efuse-y		:= mt6359-efuse.o
+
+# DOTY MT6890 DEVINFO current-5.4 provider
+obj-$(CONFIG_MTK_DEVINFO) += mtk-devinfo.o

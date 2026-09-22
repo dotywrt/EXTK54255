@@ -1493,3 +1493,21 @@ config SND_SOC_TPA6130A2
 	depends on I2C
 
 endmenu
+
+# DOTY-AW1000-STAGE3: restored from local 4.19 donor
+config SND_SOC_MT6359
+	tristate "MediaTek MT6359 Codec driver"
+	help
+	  MediaTek MT6359 is a codec which contain
+	  three ADC for uplink path(MICs), and
+	  three DAC for downlink path(handset,
+	  headset, lineout).
+
+# DOTY-AW1000-STAGE3: restored from local 4.19 donor
+config SND_SOC_NAU88C22
+	tristate "Nuvoton Technology Corporation NAU88C22 CODEC"
+	depends on I2C
+
+# DOTY-AW1000-STAGE3: restored from local 4.19 donor
+config SND_SOC_PROSLIC
+	tristate "Proslic chip"

@@ -1086,6 +1086,22 @@ static int __maybe_unused _get_cpu_power(unsigned long *mW, unsigned long *kHz,
 	return 0;
 }
 
+
+/*
+ * MT6890 vendor compatibility API.
+ *
+ * Vendor 4.19 consumers use of_dev_pm_opp_get_cpu_power() directly as
+ * the Energy Model active_power callback. Linux 5.4 keeps the equivalent
+ * calculation internally in _get_cpu_power(). Preserve the vendor API
+ * while using the native 5.4 implementation.
+ */
+int of_dev_pm_opp_get_cpu_power(unsigned long *mW,
+				unsigned long *kHz, int cpu)
+{
+	return _get_cpu_power(mW, kHz, cpu);
+}
+EXPORT_SYMBOL_GPL(of_dev_pm_opp_get_cpu_power);
+
 /**
  * dev_pm_opp_of_register_em() - Attempt to register an Energy Model
  * @cpus	: CPUs for which an Energy Model has to be registered

@@ -39,3 +39,6 @@ obj-$(CONFIG_HW_RANDOM_MTK)	+= mtk-rng.o
 obj-$(CONFIG_HW_RANDOM_S390) += s390-trng.o
 obj-$(CONFIG_HW_RANDOM_KEYSTONE) += ks-sa-rng.o
 obj-$(CONFIG_HW_RANDOM_OPTEE) += optee-rng.o
+
+# DOTY FULL PARITY v3 HW_RANDOM_MT67XX
+obj-$(CONFIG_HW_RANDOM_MT67XX) += mt67xx-rng.o

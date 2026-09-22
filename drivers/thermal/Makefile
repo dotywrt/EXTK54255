@@ -54,3 +54,6 @@ obj-$(CONFIG_MTK_THERMAL)	+= mtk_thermal.o
 obj-$(CONFIG_GENERIC_ADC_THERMAL)	+= thermal-generic-adc.o
 obj-$(CONFIG_ZX2967_THERMAL)	+= zx2967_thermal.o
 obj-$(CONFIG_UNIPHIER_THERMAL)	+= uniphier_thermal.o
+
+# DOTY MT6890 parent Kbuild closure v10: drivers/thermal -> MediaTek thermal subtree
+obj-$(CONFIG_MTK_THERMAL) += mediatek/

@@ -12,6 +12,7 @@
 #include <linux/dma-mapping.h>
 #include <linux/netdevice.h>
 #include <linux/of_net.h>
+#include <linux/of_gpio.h>
 #include <linux/u64_stats_sync.h>
 #include <linux/refcount.h>
 #include <linux/phylink.h>
@@ -325,6 +326,8 @@
 #define PHY_IAC_START		BIT(16)
 #define PHY_IAC_ADDR_SHIFT	20
 #define PHY_IAC_REG_SHIFT	25
+#define MDIO_CMD		18
+#define NMDIO_ST		16
 #define PHY_IAC_TIMEOUT		HZ
 
 #define MTK_MAC_MISC		0x1000c
@@ -577,6 +580,14 @@ enum mtk_clks_map {
 	MTK_CLK_SGMII2_CDR_FB,
 	MTK_CLK_SGMII_CK,
 	MTK_CLK_ETH2PLL,
+	MTK_CLK_NETSYS_SEL,
+	MTK_CLK_MEDSYS_SEL,
+	MTK_CLK_NETSYS_500M_SEL,
+	MTK_CLK_NETSYS_MED_MCU_SEL,
+	MTK_CLK_NETSYS_WED_MCU_SEL,
+	MTK_CLK_NETSYS_2X_SEL,
+	MTK_CLK_SGMII_SEL,
+	MTK_CLK_SGMII_SBUS_SEL,
 	MTK_CLK_MAX
 };
 
@@ -607,6 +618,15 @@ enum mtk_clks_map {
 				 BIT(MTK_CLK_SGMII2_CDR_FB) | \
 				 BIT(MTK_CLK_SGMII_CK) | \
 				 BIT(MTK_CLK_ETH2PLL) | BIT(MTK_CLK_SGMIITOP))
+
+#define MT6890_CLKS_BITMAP	(BIT(MTK_CLK_NETSYS_SEL) | \
+				 BIT(MTK_CLK_MEDSYS_SEL) | \
+				 BIT(MTK_CLK_NETSYS_500M_SEL) | \
+				 BIT(MTK_CLK_NETSYS_MED_MCU_SEL) | \
+				 BIT(MTK_CLK_NETSYS_WED_MCU_SEL) | \
+				 BIT(MTK_CLK_NETSYS_2X_SEL) | \
+				 BIT(MTK_CLK_SGMII_SEL) | \
+				 BIT(MTK_CLK_SGMII_SBUS_SEL))
 
 enum mtk_dev_state {
 	MTK_HW_INIT,
@@ -711,6 +731,9 @@ enum mkt_eth_capabilities {
 	MTK_ETH_PATH_GMAC2_SGMII_BIT,
 	MTK_ETH_PATH_GMAC2_GEPHY_BIT,
 	MTK_ETH_PATH_GDM1_ESW_BIT,
+
+	/* MT6890 has separate SGMII PHY register blocks */
+	MTK_SGMII_PHY_BIT,
 };
 
 /* Supported hardware group on SoCs */
@@ -727,6 +750,7 @@ enum mkt_eth_capabilities {
 #define MTK_TRGMII_MT7621_CLK	BIT(MTK_TRGMII_MT7621_CLK_BIT)
 #define MTK_QDMA		BIT(MTK_QDMA_BIT)
 #define MTK_SOC_MT7628		BIT(MTK_SOC_MT7628_BIT)
+#define MTK_SGMII_PHY		BIT(MTK_SGMII_PHY_BIT)
 
 #define MTK_ETH_MUX_GDM1_TO_GMAC1_ESW		\
 	BIT(MTK_ETH_MUX_GDM1_TO_GMAC1_ESW_BIT)
@@ -799,6 +823,8 @@ enum mkt_eth_capabilities {
 		      MTK_MUX_U3_GMAC2_TO_QPHY | \
 		      MTK_MUX_GMAC12_TO_GEPHY_SGMII | MTK_QDMA)
 
+#define MT6890_CAPS  (MTK_GMAC1_SGMII | MTK_GMAC2_SGMII | MTK_SGMII_PHY)
+
 /* struct mtk_eth_data -	This is the structure holding all differences
  *				among various plaforms
  * @ana_rgc3:                   The offset for register ANA_RGC3 related to
@@ -837,6 +863,7 @@ struct mtk_soc_data {
 
 struct mtk_sgmii {
 	struct regmap   *regmap[MTK_MAX_DEVS];
+	struct regmap   *regmap_phy[MTK_MAX_DEVS];
 	u32             flags[MTK_MAX_DEVS];
 	u32             ana_rgc3;
 };
@@ -953,6 +980,7 @@ int mtk_sgmii_setup_mode_an(struct mtk_sgmii *ss, int id);
 int mtk_sgmii_setup_mode_force(struct mtk_sgmii *ss, int id,
 			       const struct phylink_link_state *state);
 void mtk_sgmii_restart_an(struct mtk_eth *eth, int mac_id);
+int get_gmac1_mode(void);
 
 int mtk_gmac_sgmii_path_setup(struct mtk_eth *eth, int mac_id);
 int mtk_gmac_gephy_path_setup(struct mtk_eth *eth, int mac_id);

@@ -19,6 +19,214 @@
 #include <dt-bindings/power/mt7622-power.h>
 #include <dt-bindings/power/mt7623a-power.h>
 #include <dt-bindings/power/mt8173-power.h>
+#include <linux/pm_opp.h>
+#include "mtk-scpsys.h"
+#include <dt-bindings/power/mt6779-power.h>
+#include <dt-bindings/power/mt6880-power.h>
+#include <dt-bindings/power/mt6890-power.h>
+#include <linux/soc/mediatek/scpsys-ext.h>
+
+/* DOTY-MT6890-SCPSYS-EARLY-MACROS-v4-BEGIN */
+/* Exact vendor donor definitions resolved recursively from donor tree. */
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:30 */
+#define MTCMOS_BRINGUP      0
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:36 */
+#define MTK_SCPD_STRICT_BUSP		BIT(2)
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:37 */
+#define MTK_SCPD_ALWAYS_ON		BIT(3)
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:38 */
+#define MTK_SCPD_MD_OPS			BIT(4)
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:39 */
+#define MTK_SCPD_NETSYS_OPS		BIT(5)
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:63 */
+#define NETSYS_S_SRAM_CON		0x0378
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:73 */
+#define PWR_SRAM_CLKISO_BIT		BIT(5)
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:74 */
+#define PWR_SRAM_ISOINT_B_BIT		BIT(6)
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:120 */
+#define MT6880_TOP_AXI_PROT_EN_MD1	(BIT(7))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:121 */
+#define MT6880_TOP_AXI_PROT_EN_INFRA_VDNR_MD1	(BIT(2) | BIT(10))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:122 */
+#define MT6880_TOP_AXI_PROT_EN_INFRA_VDNR_1_MD1	(BIT(6))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:125 */
+#define MT6880_TOP_AXI_PROT_EN_CONN	(BIT(27))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:126 */
+#define MT6880_TOP_AXI_PROT_EN_CONN_2ND	(BIT(14))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:127 */
+#define MT6880_TOP_AXI_PROT_EN_CONN_3RD	(BIT(13))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:128 */
+#define MT6880_TOP_AXI_PROT_EN_CONN_4RD	(BIT(28))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:131 */
+#define MT6880_TOP_AXI_PROT_EN_INFRA_VDNR_1_MSDC	(BIT(3) | BIT(16))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:132 */
+#define MT6880_TOP_AXI_PROT_EN_INFRA_VDNR_1_SSUSB	(BIT(1) | BIT(2))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:133 */
+#define MT6880_TOP_AXI_PROT_EN_INFRA_VDNR_3_SSUSB	(BIT(11))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:135 */
+#define MT6890_TOP_AXI_PROT_EN_2_MFG0	(BIT(5) | BIT(6))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:136 */
+#define MT6890_TOP_AXI_PROT_EN_MFG0	(BIT(21) | BIT(22))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:137 */
+#define MT6890_TOP_AXI_PROT_EN_1_MFG0	(BIT(21))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:138 */
+#define MT6890_TOP_AXI_PROT_EN_2_MFG0_2ND	(BIT(7))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:151 */
+#define MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_1_ETH	(BIT(4) | BIT(17))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:156 */
+#define MT6890_TOP_AXI_PROT_EN_MM_DIS	(BIT(10))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:157 */
+#define MT6890_TOP_AXI_PROT_EN_DIS	(BIT(6))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:158 */
+#define MT6890_TOP_AXI_PROT_EN_MD1	(BIT(7))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:159 */
+#define MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_MD1	(BIT(2) | BIT(10))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:160 */
+#define MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_1_MD1	(BIT(6))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:161 */
+#define MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_EIP97	(BIT(16))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:162 */
+#define MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_1_EIP97	(BIT(18))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:163 */
+#define MT6890_TOP_AXI_PROT_EN_CONN	(BIT(27))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:164 */
+#define MT6890_TOP_AXI_PROT_EN_CONN_2ND	(BIT(14))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:165 */
+#define MT6890_TOP_AXI_PROT_EN_CONN_3RD	(BIT(13))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:166 */
+#define MT6890_TOP_AXI_PROT_EN_CONN_4RD	(BIT(28))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:169 */
+#define MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_1_MSDC	(BIT(3) | BIT(16))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:170 */
+#define MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_1_SSUSB	(BIT(1) | BIT(2))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:171 */
+#define MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_3_SSUSB	(BIT(11))
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:1842 */
+#define SPM_PWR_STATUS_MT6779		0x0160
+/* donor: drivers/soc/mediatek/mtk-scpsys.c:1843 */
+#define SPM_PWR_STATUS_2ND_MT6779	0x0164
+/* donor: include/dt-bindings/power/mt6779-power.h:8 */
+#define MT6779_POWER_DOMAIN_MM		0
+/* donor: include/dt-bindings/power/mt6779-power.h:9 */
+#define MT6779_POWER_DOMAIN_VDE		1
+/* donor: include/dt-bindings/power/mt6779-power.h:10 */
+#define MT6779_POWER_DOMAIN_CAM		2
+/* donor: include/dt-bindings/power/mt6779-power.h:11 */
+#define MT6779_POWER_DOMAIN_ISP		3
+/* donor: include/dt-bindings/power/mt6779-power.h:12 */
+#define MT6779_POWER_DOMAIN_IPE		4
+/* donor: include/dt-bindings/power/mt6779-power.h:13 */
+#define MT6779_POWER_DOMAIN_VEN		5
+/* donor: include/dt-bindings/power/mt6779-power.h:14 */
+#define MT6779_POWER_DOMAIN_MFG0	6
+/* donor: include/dt-bindings/power/mt6779-power.h:15 */
+#define MT6779_POWER_DOMAIN_MFG1	7
+/* donor: include/dt-bindings/power/mt6779-power.h:16 */
+#define MT6779_POWER_DOMAIN_MFG2	8
+/* donor: include/dt-bindings/power/mt6779-power.h:17 */
+#define MT6779_POWER_DOMAIN_MFG3	9
+/* donor: include/dt-bindings/power/mt6779-power.h:18 */
+#define MT6779_POWER_DOMAIN_AUDIO	10
+/* donor: include/dt-bindings/power/mt6779-power.h:19 */
+#define MT6779_POWER_DOMAIN_CONN	11
+/* donor: include/dt-bindings/power/mt6779-power.h:20 */
+#define MT6779_POWER_DOMAIN_MD		12
+/* donor: include/dt-bindings/power/mt6779-power.h:21 */
+#define MT6779_POWER_DOMAIN_INFRA	13
+/* donor: include/dt-bindings/power/mt6880-power.h:10 */
+#define MT6880_POWER_DOMAIN_PEXTP_D_2LX1		0
+/* donor: include/dt-bindings/power/mt6880-power.h:11 */
+#define MT6880_POWER_DOMAIN_MD1				1
+/* donor: include/dt-bindings/power/mt6880-power.h:12 */
+#define MT6880_POWER_DOMAIN_CONN			2
+/* donor: include/dt-bindings/power/mt6880-power.h:13 */
+#define MT6880_POWER_DOMAIN_MSDC			3
+/* donor: include/dt-bindings/power/mt6880-power.h:14 */
+#define MT6880_POWER_DOMAIN_SSUSB			4
+/* donor: include/dt-bindings/power/mt6880-power.h:15 */
+#define MT6880_POWER_DOMAIN_SSUSB_PHY			5
+/* donor: include/dt-bindings/power/mt6880-power.h:16 */
+#define MT6880_POWER_DOMAIN_PEXTP_D_2LX1_PHY		6
+/* donor: include/dt-bindings/power/mt6890-power.h:9 */
+#define MT6890_POWER_DOMAIN_MFG0			0
+/* donor: include/dt-bindings/power/mt6890-power.h:10 */
+#define MT6890_POWER_DOMAIN_PEXTP_D_2LX1		1
+/* donor: include/dt-bindings/power/mt6890-power.h:11 */
+#define MT6890_POWER_DOMAIN_PEXTP_R_2LX1		2
+/* donor: include/dt-bindings/power/mt6890-power.h:12 */
+#define MT6890_POWER_DOMAIN_PEXTP_R_1LX2		3
+/* donor: include/dt-bindings/power/mt6890-power.h:13 */
+#define MT6890_POWER_DOMAIN_ETH				4
+/* donor: include/dt-bindings/power/mt6890-power.h:14 */
+#define MT6890_POWER_DOMAIN_DIS				5
+/* donor: include/dt-bindings/power/mt6890-power.h:15 */
+#define MT6890_POWER_DOMAIN_AUDIO			6
+/* donor: include/dt-bindings/power/mt6890-power.h:16 */
+#define MT6890_POWER_DOMAIN_MD1				7
+/* donor: include/dt-bindings/power/mt6890-power.h:17 */
+#define MT6890_POWER_DOMAIN_EIP97			8
+/* donor: include/dt-bindings/power/mt6890-power.h:18 */
+#define MT6890_POWER_DOMAIN_CONN			9
+/* donor: include/dt-bindings/power/mt6890-power.h:19 */
+#define MT6890_POWER_DOMAIN_MSDC			10
+/* donor: include/dt-bindings/power/mt6890-power.h:20 */
+#define MT6890_POWER_DOMAIN_SSUSB			11
+/* donor: include/dt-bindings/power/mt6890-power.h:21 */
+#define MT6890_POWER_DOMAIN_SSUSB_PHY			12
+/* donor: include/dt-bindings/power/mt6890-power.h:22 */
+#define MT6890_POWER_DOMAIN_SGMII_0_PHY			13
+/* donor: include/dt-bindings/power/mt6890-power.h:23 */
+#define MT6890_POWER_DOMAIN_SGMII_0_TOP			14
+/* donor: include/dt-bindings/power/mt6890-power.h:24 */
+#define MT6890_POWER_DOMAIN_SGMII_1_PHY			15
+/* donor: include/dt-bindings/power/mt6890-power.h:25 */
+#define MT6890_POWER_DOMAIN_SGMII_1_TOP			16
+/* donor: include/dt-bindings/power/mt6890-power.h:26 */
+#define MT6890_POWER_DOMAIN_PEXTP_D_2LX1_PHY		17
+/* donor: include/dt-bindings/power/mt6890-power.h:27 */
+#define MT6890_POWER_DOMAIN_PEXTP_R_2LX1_PHY		18
+/* donor: include/dt-bindings/power/mt6890-power.h:28 */
+#define MT6890_POWER_DOMAIN_PEXTP_R_1LX2_0P_PHY		19
+/* donor: include/dt-bindings/power/mt6890-power.h:29 */
+#define MT6890_POWER_DOMAIN_PEXTP_R_1LX2_1P_PHY		20
+/* donor: include/linux/soc/mediatek/infracfg.h:35 */
+#define MT6779_IFR_SET				0x02A0
+/* donor: include/linux/soc/mediatek/infracfg.h:36 */
+#define MT6779_IFR_CLR				0x02A4
+/* donor: include/linux/soc/mediatek/infracfg.h:38 */
+#define MT6779_IFR1_SET				0x02A8
+/* donor: include/linux/soc/mediatek/infracfg.h:39 */
+#define MT6779_IFR1_CLR				0x02AC
+/* donor: include/linux/soc/mediatek/infracfg.h:44 */
+#define MT6779_IFRMM_SET			0x02D4
+/* donor: include/linux/soc/mediatek/infracfg.h:45 */
+#define MT6779_IFRMM_CLR			0x02D8
+/* donor: include/linux/soc/mediatek/infracfg.h:47 */
+#define MT6779_IFR_STA1				0x0228
+/* donor: include/linux/soc/mediatek/infracfg.h:48 */
+#define MT6779_IFR1_STA1			0x0258
+/* donor: include/linux/soc/mediatek/infracfg.h:50 */
+#define MT6779_IFRMM_STA1			0x02EC
+/* donor: include/linux/soc/mediatek/infracfg.h:53 */
+#define MT6779_SMI_SET				0x03C4
+/* donor: include/linux/soc/mediatek/infracfg.h:54 */
+#define MT6779_SMI_CLR				0x03C8
+/* donor: include/linux/soc/mediatek/infracfg.h:55 */
+#define MT6779_SMI_STA				0x03C0
+/* donor: include/linux/soc/mediatek/infracfg.h:57 */
+#define MT6779_IFR_SI0_SET			0x3B8
+/* donor: include/linux/soc/mediatek/infracfg.h:58 */
+#define MT6779_IFR_SI0_CLR			0x3BC
+/* donor: include/linux/soc/mediatek/infracfg.h:59 */
+#define MT6779_IFR_PDN_SI2_CTL			0x234
+/* donor: include/linux/soc/mediatek/infracfg.h:60 */
+#define MT6779_IFR_SI0_STA			0x0
+/* donor: include/linux/soc/mediatek/infracfg.h:61 */
+#define MT6779_IFR_SI2_STA			0x28
+/* donor: include/vdso/bits.h:5 */
+#define BIT(nr)			(1UL << (nr))
+/* DOTY-MT6890-SCPSYS-EARLY-MACROS-v4-END */
 
 #define MTK_POLL_DELAY_US   10
 #define MTK_POLL_TIMEOUT    (jiffies_to_usecs(HZ))
@@ -89,6 +297,11 @@ enum clk_id {
 	CLK_HIFSEL,
 	CLK_JPGDEC,
 	CLK_AUDIO,
+	CLK_ETH1,
+	CLK_ETH2,
+	CLK_ETH3,
+	CLK_ETH4,
+	CLK_EIP97,
 	CLK_MAX,
 };
 
@@ -103,20 +316,34 @@ static const char * const clk_names[] = {
 	"hif_sel",
 	"jpgdec",
 	"audio",
+	"snps_eth_312p5m_sel",
+	"snps_eth_250m_sel",
+	"snps_ptp_sel",
+	"snps_rmii_sel",
+	"eip97_sel",
 	NULL,
 };
 
-#define MAX_CLKS	3
+#define MAX_CLKS	8
+#define MAX_SUBSYS_CLKS 20
 
 struct scp_domain_data {
 	const char *name;
 	u32 sta_mask;
 	int ctl_offs;
+	bool sram_iso_ctrl;
 	u32 sram_pdn_bits;
 	u32 sram_pdn_ack_bits;
+	u32 sram_pdn_bits2;
+	u32 sram_pdn_ack_bits2;
 	u32 bus_prot_mask;
+	int extb_iso_offs;
+	u32 extb_iso_bits;
 	enum clk_id clk_id[MAX_CLKS];
+	const char *basic_clk_name[MAX_CLKS];
+	const char *subsys_clk_prefix;
 	u8 caps;
+	struct bus_prot bp_table[MAX_STEPS];
 };
 
 struct scp;
@@ -125,6 +352,7 @@ struct scp_domain {
 	struct generic_pm_domain genpd;
 	struct scp *scp;
 	struct clk *clk[MAX_CLKS];
+	struct clk *subsys_clk[MAX_SUBSYS_CLKS];
 	const struct scp_domain_data *data;
 	struct regulator *supply;
 };
@@ -140,6 +368,8 @@ struct scp {
 	struct device *dev;
 	void __iomem *base;
 	struct regmap *infracfg;
+	struct regmap *infracfg_nao;
+	struct regmap *smi_common;
 	struct scp_ctrl_reg ctrl_reg;
 	bool bus_prot_reg_update;
 };
@@ -158,13 +388,30 @@ struct scp_soc_data {
 	bool bus_prot_reg_update;
 };
 
+
+/* DOTY MT6890 Stage-2C-A11 vendor SCPSYS notifier ABI */
+static BLOCKING_NOTIFIER_HEAD(scpsys_notifier_list);
+
+int register_scpsys_notifier(struct notifier_block *nb)
+{
+	return blocking_notifier_chain_register(&scpsys_notifier_list, nb);
+}
+EXPORT_SYMBOL_GPL(register_scpsys_notifier);
+
+int unregister_scpsys_notifier(struct notifier_block *nb)
+{
+	return blocking_notifier_chain_unregister(&scpsys_notifier_list, nb);
+}
+EXPORT_SYMBOL_GPL(unregister_scpsys_notifier);
+
 static int scpsys_domain_is_on(struct scp_domain *scpd)
 {
 	struct scp *scp = scpd->scp;
+	u32 status, status2;
 
-	u32 status = readl(scp->base + scp->ctrl_reg.pwr_sta_offs) &
+	status = readl(scp->base + scp->ctrl_reg.pwr_sta_offs) &
 						scpd->data->sta_mask;
-	u32 status2 = readl(scp->base + scp->ctrl_reg.pwr_sta2nd_offs) &
+	status2 = readl(scp->base + scp->ctrl_reg.pwr_sta2nd_offs) &
 						scpd->data->sta_mask;
 
 	/*
@@ -180,32 +427,291 @@ static int scpsys_domain_is_on(struct scp_domain *scpd)
 	return -EINVAL;
 }
 
+static int scpsys_md_domain_is_on(struct scp_domain *scpd)
+{
+	struct scp *scp = scpd->scp;
+	u32 status;
+
+	status = readl(scp->base + scp->ctrl_reg.pwr_sta_offs) &
+						scpd->data->sta_mask;
+	/*
+	 * A domain is on when the status bit is set.
+	 */
+	if (status)
+		return true;
+	return false;
+}
+
+static int scpsys_regulator_enable(struct scp_domain *scpd)
+{
+	if (!scpd->supply)
+		return 0;
+
+	return regulator_enable(scpd->supply);
+}
+
+static int scpsys_regulator_disable(struct scp_domain *scpd)
+{
+	if (!scpd->supply)
+		return 0;
+
+	return regulator_disable(scpd->supply);
+}
+
+static int scpsys_clk_enable(struct clk *clk[], int max_num)
+{
+	int i, ret = 0;
+
+	for (i = 0; i < max_num && clk[i]; i++) {
+		ret = clk_prepare_enable(clk[i]);
+		if (ret) {
+			for (--i; i >= 0; i--)
+				clk_disable_unprepare(clk[i]);
+
+			break;
+		}
+	}
+
+	return ret;
+}
+
+static void scpsys_clk_disable(struct clk *clk[], int max_num)
+{
+	int i;
+
+	for (i = max_num - 1; i >= 0; i--) {
+		if (clk[i])
+			clk_disable_unprepare(clk[i]);
+	}
+}
+
+static int scpsys_sram_enable(struct scp_domain *scpd, void __iomem *ctl_addr)
+{
+	u32 val;
+	u32 pdn_ack = scpd->data->sram_pdn_ack_bits;
+	int tmp;
+
+	val = readl(ctl_addr) & ~scpd->data->sram_pdn_bits;
+	writel(val, ctl_addr);
+
+	/* Either wait until SRAM_PDN_ACK all 0 or have a force wait */
+	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_FWAIT_SRAM)) {
+		/*
+		 * Currently, MTK_SCPD_FWAIT_SRAM is necessary only for
+		 * MT7622_POWER_DOMAIN_WB and thus just a trivial setup
+		 * is applied here.
+		 */
+		usleep_range(12000, 12100);
+	} else {
+		/* Either wait until SRAM_PDN_ACK all 1 or 0 */
+		int ret = readl_poll_timeout(ctl_addr, tmp,
+				(tmp & pdn_ack) == 0,
+				MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
+		if (ret < 0)
+			return ret;
+	}
+
+	if (scpd->data->sram_iso_ctrl)	{
+		val = readl(ctl_addr) | PWR_SRAM_ISOINT_B_BIT;
+		writel(val, ctl_addr);
+		udelay(1);
+		val &= ~PWR_SRAM_CLKISO_BIT;
+		writel(val, ctl_addr);
+	}
+
+	return 0;
+}
+
+static int scpsys_sram_disable(struct scp_domain *scpd, void __iomem *ctl_addr)
+{
+	u32 val;
+	u32 pdn_ack = scpd->data->sram_pdn_ack_bits;
+	int tmp;
+
+	if (scpd->data->sram_iso_ctrl)	{
+		val = readl(ctl_addr);
+		val |= PWR_SRAM_CLKISO_BIT;
+		writel(val, ctl_addr);
+		val &= ~PWR_SRAM_ISOINT_B_BIT;
+		writel(val, ctl_addr);
+		udelay(1);
+	}
+
+	val = readl(ctl_addr) | scpd->data->sram_pdn_bits;
+	writel(val, ctl_addr);
+
+	/* Either wait until SRAM_PDN_ACK all 1 or 0 */
+	return readl_poll_timeout(ctl_addr, tmp,
+			(tmp & pdn_ack) == pdn_ack,
+			MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
+}
+
+static int scpsys_netsys_sram_enable(struct scp_domain *scpd, void __iomem *net_sram_addr)
+{
+	u32 val;
+	u32 pdn_ack = scpd->data->sram_pdn_ack_bits;
+	int tmp;
+	u32 val2;
+	u32 pdn_ack2 = scpd->data->sram_pdn_ack_bits2;
+	int tmp2;
+/*mt6880 pdn_ack1*/
+	val = readl(net_sram_addr) & ~scpd->data->sram_pdn_bits;
+	writel(val, net_sram_addr);
+
+	/* Either wait until SRAM_PDN_ACK all 0 or have a force wait */
+	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_FWAIT_SRAM)) {
+		/*
+		 * Currently, MTK_SCPD_FWAIT_SRAM is necessary only for
+		 * MT7622_POWER_DOMAIN_WB and thus just a trivial setup
+		 * is applied here.
+		 */
+		usleep_range(12000, 12100);
+	} else {
+		/* Either wait until SRAM_PDN_ACK all 1 or 0 */
+		int ret = readl_poll_timeout(net_sram_addr, tmp,
+				(tmp & pdn_ack) == 0,
+				MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
+		if (ret < 0)
+			return ret;
+	}
+
+/*mt6880 pdn_ack2*/
+
+	val2 = readl(net_sram_addr) & ~scpd->data->sram_pdn_bits2;
+	writel(val2, net_sram_addr);
+
+	/* Either wait until SRAM_PDN_ACK all 0 or have a force wait */
+	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_FWAIT_SRAM)) {
+		/*
+		 * Currently, MTK_SCPD_FWAIT_SRAM is necessary only for
+		 * MT7622_POWER_DOMAIN_WB and thus just a trivial setup
+		 * is applied here.
+		 */
+		usleep_range(12000, 12100);
+	} else {
+		/* Either wait until SRAM_PDN_ACK all 1 or 0 */
+		int ret = readl_poll_timeout(net_sram_addr, tmp2,
+				(tmp2 & pdn_ack2) == 0,
+				MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
+		if (ret < 0)
+			return ret;
+	}
+
+	return 0;
+}
+
+static int scpsys_netsys_sram_disable(struct scp_domain *scpd, void __iomem *net_sram_addr)
+{
+	u32 val;
+	u32 pdn_ack = scpd->data->sram_pdn_ack_bits;
+	int tmp;
+	u32 val2;
+	u32 pdn_ack2 = scpd->data->sram_pdn_ack_bits2;
+	int tmp2;
+
+	val = readl(net_sram_addr) | scpd->data->sram_pdn_bits;
+	writel(val, net_sram_addr);
+
+	/* Either wait until SRAM_PDN_ACK all 1 or 0 */
+	return readl_poll_timeout(net_sram_addr, tmp,
+			(tmp & pdn_ack) == pdn_ack,
+			MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
+		
+/*mt6880 pdn_ack2*/	
+	val2 = readl(net_sram_addr) | scpd->data->sram_pdn_bits2;
+	writel(val2, net_sram_addr);
+
+	/* Either wait until SRAM_PDN_ACK all 1 or 0 */
+	return readl_poll_timeout(net_sram_addr, tmp2,
+			(tmp2 & pdn_ack2) == pdn_ack2,
+			MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
+}
+
+static int scpsys_bus_protect_enable(struct scp_domain *scpd)
+{
+	struct scp *scp = scpd->scp;
+	int ret = 0;
+
+	if (scpd->data->bus_prot_mask) {
+		ret = mtk_infracfg_set_bus_protection(scp->infracfg,
+				scpd->data->bus_prot_mask,
+				scp->bus_prot_reg_update);
+	} else if (scpd->data->bp_table[0].mask) {
+		ret = mtk_scpsys_ext_set_bus_protection(scpd->data->bp_table,
+				scp->infracfg, scp->smi_common,
+				scp->infracfg_nao);
+	}
+
+	return ret;
+}
+
+static int scpsys_bus_protect_disable(struct scp_domain *scpd)
+{
+	struct scp *scp = scpd->scp;
+	int ret = 0;
+
+	if (scpd->data->bus_prot_mask) {
+		ret = mtk_infracfg_clear_bus_protection(scp->infracfg,
+				scpd->data->bus_prot_mask,
+				scp->bus_prot_reg_update);
+	} else if (scpd->data->bp_table[0].mask) {
+		ret = mtk_scpsys_ext_clear_bus_protection(scpd->data->bp_table,
+				scp->infracfg, scp->smi_common,
+				scp->infracfg_nao);
+	}
+
+	return ret;
+}
+
+static void scpsys_extb_iso_down(struct scp_domain *scpd)
+{
+	u32 val;
+	struct scp *scp;
+	void __iomem *ctl_addr;
+
+	if (!scpd->data->extb_iso_offs)
+		return;
+
+	scp = scpd->scp;
+	ctl_addr = scp->base + scpd->data->extb_iso_offs;
+	val = readl(ctl_addr) & ~scpd->data->extb_iso_bits;
+	writel(val, ctl_addr);
+}
+
+static void scpsys_extb_iso_up(struct scp_domain *scpd)
+{
+	u32 val;
+	struct scp *scp;
+	void __iomem *ctl_addr;
+
+	if (!scpd->data->extb_iso_offs)
+		return;
+
+	scp = scpd->scp;
+	ctl_addr = scp->base + scpd->data->extb_iso_offs;
+	val = readl(ctl_addr) | scpd->data->extb_iso_bits;
+	writel(val, ctl_addr);
+}
+
 static int scpsys_power_on(struct generic_pm_domain *genpd)
 {
 	struct scp_domain *scpd = container_of(genpd, struct scp_domain, genpd);
 	struct scp *scp = scpd->scp;
 	void __iomem *ctl_addr = scp->base + scpd->data->ctl_offs;
-	u32 pdn_ack = scpd->data->sram_pdn_ack_bits;
 	u32 val;
 	int ret, tmp;
-	int i;
 
-	if (scpd->supply) {
-		ret = regulator_enable(scpd->supply);
-		if (ret)
-			return ret;
-	}
+	ret = scpsys_regulator_enable(scpd);
+	if (ret < 0)
+		return ret;
 
-	for (i = 0; i < MAX_CLKS && scpd->clk[i]; i++) {
-		ret = clk_prepare_enable(scpd->clk[i]);
-		if (ret) {
-			for (--i; i >= 0; i--)
-				clk_disable_unprepare(scpd->clk[i]);
+	scpsys_extb_iso_down(scpd);
 
-			goto err_clk;
-		}
-	}
+	ret = scpsys_clk_enable(scpd->clk, MAX_CLKS);
+	if (ret)
+		goto err_clk;
 
+	/* subsys power on */
 	val = readl(ctl_addr);
 	val |= PWR_ON_BIT;
 	writel(val, ctl_addr);
@@ -224,46 +730,54 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
 	val &= ~PWR_ISO_BIT;
 	writel(val, ctl_addr);
 
+	if(strcmp(genpd->name,"ssusb_phy")==0){
+		val &= ~PWR_RST_B_BIT;
+		writel(val, ctl_addr);
+	}
+
 	val |= PWR_RST_B_BIT;
 	writel(val, ctl_addr);
 
-	val &= ~scpd->data->sram_pdn_bits;
-	writel(val, ctl_addr);
-
-	/* Either wait until SRAM_PDN_ACK all 0 or have a force wait */
-	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_FWAIT_SRAM)) {
+	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_STRICT_BUSP)) {
 		/*
-		 * Currently, MTK_SCPD_FWAIT_SRAM is necessary only for
-		 * MT7622_POWER_DOMAIN_WB and thus just a trivial setup is
-		 * applied here.
+		 * In few Mediatek platforms(e.g. MT6779), the bus protect
+		 * policy is stricter, which leads to bus protect release must
+		 * be prior to bus access.
 		 */
-		usleep_range(12000, 12100);
-
-	} else {
-		ret = readl_poll_timeout(ctl_addr, tmp, (tmp & pdn_ack) == 0,
-					 MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
+		ret = scpsys_sram_enable(scpd, ctl_addr);
 		if (ret < 0)
 			goto err_pwr_ack;
-	}
 
-	if (scpd->data->bus_prot_mask) {
-		ret = mtk_infracfg_clear_bus_protection(scp->infracfg,
-				scpd->data->bus_prot_mask,
-				scp->bus_prot_reg_update);
-		if (ret)
+		ret = scpsys_bus_protect_disable(scpd);
+		if (ret < 0)
 			goto err_pwr_ack;
+
+		ret = scpsys_clk_enable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
+		if (ret < 0)
+			goto err_pwr_ack;
+	} else {
+		ret = scpsys_clk_enable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
+		if (ret < 0)
+			goto err_pwr_ack;
+
+		ret = scpsys_sram_enable(scpd, ctl_addr);
+		if (ret < 0)
+			goto err_sram;
+
+		ret = scpsys_bus_protect_disable(scpd);
+		if (ret < 0)
+			goto err_sram;
 	}
 
 	return 0;
 
+err_sram:
+	scpsys_clk_disable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
 err_pwr_ack:
-	for (i = MAX_CLKS - 1; i >= 0; i--) {
-		if (scpd->clk[i])
-			clk_disable_unprepare(scpd->clk[i]);
-	}
+	scpsys_clk_disable(scpd->clk, MAX_CLKS);
 err_clk:
-	if (scpd->supply)
-		regulator_disable(scpd->supply);
+	scpsys_extb_iso_up(scpd);
+	scpsys_regulator_disable(scpd);
 
 	dev_err(scp->dev, "Failed to power on domain %s\n", genpd->name);
 
@@ -275,30 +789,303 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
 	struct scp_domain *scpd = container_of(genpd, struct scp_domain, genpd);
 	struct scp *scp = scpd->scp;
 	void __iomem *ctl_addr = scp->base + scpd->data->ctl_offs;
-	u32 pdn_ack = scpd->data->sram_pdn_ack_bits;
 	u32 val;
 	int ret, tmp;
-	int i;
 
-	if (scpd->data->bus_prot_mask) {
-		ret = mtk_infracfg_set_bus_protection(scp->infracfg,
-				scpd->data->bus_prot_mask,
-				scp->bus_prot_reg_update);
-		if (ret)
-			goto out;
-	}
+	ret = scpsys_bus_protect_enable(scpd);
+	if (ret < 0)
+		goto out;
 
-	val = readl(ctl_addr);
-	val |= scpd->data->sram_pdn_bits;
+	ret = scpsys_sram_disable(scpd, ctl_addr);
+	if (ret < 0)
+		goto out;
+
+	scpsys_clk_disable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
+
+	/* subsys power off */
+	val = readl(ctl_addr) | PWR_ISO_BIT;
 	writel(val, ctl_addr);
 
-	/* wait until SRAM_PDN_ACK all 1 */
-	ret = readl_poll_timeout(ctl_addr, tmp, (tmp & pdn_ack) == pdn_ack,
+	if(strcmp(genpd->name,"ssusb_phy")==0)
+		dev_err(scp->dev, "Skip ssusb_phy rst \n");
+	else{
+		val &= ~PWR_RST_B_BIT;
+		writel(val, ctl_addr);
+        }
+
+	val |= PWR_CLK_DIS_BIT;
+	writel(val, ctl_addr);
+
+	val &= ~PWR_ON_BIT;
+	writel(val, ctl_addr);
+
+	val &= ~PWR_ON_2ND_BIT;
+	writel(val, ctl_addr);
+
+	/* wait until PWR_ACK = 0 */
+	ret = readx_poll_timeout(scpsys_domain_is_on, scpd, tmp, tmp == 0,
 				 MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
 	if (ret < 0)
 		goto out;
 
-	val |= PWR_ISO_BIT;
+	scpsys_clk_disable(scpd->clk, MAX_CLKS);
+
+	scpsys_extb_iso_up(scpd);
+
+	ret = scpsys_regulator_disable(scpd);
+	if (ret < 0)
+		goto out;
+
+	return 0;
+
+out:
+	dev_err(scp->dev, "Failed to power off domain %s\n", genpd->name);
+
+	return ret;
+}
+
+static int scpsys_md_power_on(struct generic_pm_domain *genpd)
+{
+	struct scp_domain *scpd = container_of(genpd, struct scp_domain, genpd);
+	struct scp *scp = scpd->scp;
+	void __iomem *ctl_addr = scp->base + scpd->data->ctl_offs;
+	u32 val;
+	int ret, tmp;
+
+	ret = scpsys_regulator_enable(scpd);
+	if (ret < 0)
+		return ret;
+
+	scpsys_extb_iso_down(scpd);
+
+	ret = scpsys_clk_enable(scpd->clk, MAX_CLKS);
+	if (ret)
+		goto err_clk;
+
+	/* for md subsys, reset_b is prior to power_on bit */
+	val = readl(ctl_addr);
+	val |= PWR_RST_B_BIT;
+	writel(val, ctl_addr);
+
+	/* subsys power on */
+	val |= PWR_ON_BIT;
+	writel(val, ctl_addr);
+
+	/* wait until PWR_ACK = 1 */
+	ret = readx_poll_timeout(scpsys_md_domain_is_on, scpd, tmp, tmp > 0,
+				 MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
+	if (ret < 0)
+		goto err_pwr_ack;
+
+	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_STRICT_BUSP)) {
+		/*
+		 * In few Mediatek platforms(e.g. MT6779), the bus protect
+		 * policy is stricter, which leads to bus protect release must
+		 * be prior to bus access.
+		 */
+		ret = scpsys_sram_enable(scpd, ctl_addr);
+		if (ret < 0)
+			goto err_pwr_ack;
+
+		ret = scpsys_bus_protect_disable(scpd);
+		if (ret < 0)
+			goto err_pwr_ack;
+
+		ret = scpsys_clk_enable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
+		if (ret < 0)
+			goto err_pwr_ack;
+	} else {
+		ret = scpsys_clk_enable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
+		if (ret < 0)
+			goto err_pwr_ack;
+
+		ret = scpsys_sram_enable(scpd, ctl_addr);
+		if (ret < 0)
+			goto err_sram;
+
+		ret = scpsys_bus_protect_disable(scpd);
+		if (ret < 0)
+			goto err_sram;
+	}
+
+	return 0;
+
+err_sram:
+	scpsys_clk_disable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
+err_pwr_ack:
+	scpsys_clk_disable(scpd->clk, MAX_CLKS);
+err_clk:
+	scpsys_extb_iso_up(scpd);
+	scpsys_regulator_disable(scpd);
+
+	dev_err(scp->dev, "Failed to power on domain %s\n", genpd->name);
+
+	return ret;
+}
+
+static int scpsys_md_power_off(struct generic_pm_domain *genpd)
+{
+	struct scp_domain *scpd = container_of(genpd, struct scp_domain, genpd);
+	struct scp *scp = scpd->scp;
+	void __iomem *ctl_addr = scp->base + scpd->data->ctl_offs;
+	u32 val;
+	int ret, tmp;
+
+	ret = scpsys_bus_protect_enable(scpd);
+	if (ret < 0)
+		goto out;
+
+	ret = scpsys_sram_disable(scpd, ctl_addr);
+	if (ret < 0)
+		goto out;
+	scpsys_clk_disable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
+
+	/* subsys power off */
+	val = readl(ctl_addr) & ~PWR_ON_BIT;
+	writel(val, ctl_addr);
+
+	/* wait until PWR_ACK = 0 */
+	ret = readx_poll_timeout(scpsys_md_domain_is_on, scpd, tmp, tmp == 0,
+				 MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
+	if (ret < 0)
+		goto out;
+
+	/* for md subsys, the isolation is prior to RST_B operation */
+	scpsys_extb_iso_up(scpd);
+
+	val &= ~PWR_RST_B_BIT;
+	writel(val, ctl_addr);
+
+	scpsys_clk_disable(scpd->clk, MAX_CLKS);
+
+	ret = scpsys_regulator_disable(scpd);
+	if (ret < 0)
+		goto out;
+
+	return 0;
+
+out:
+	dev_err(scp->dev, "Failed to power off domain %s\n", genpd->name);
+
+	return ret;
+}
+
+static int scpsys_netsys_power_on(struct generic_pm_domain *genpd)
+{
+	struct scp_domain *scpd = container_of(genpd, struct scp_domain, genpd);
+	struct scp *scp = scpd->scp;
+	void __iomem *ctl_addr = scp->base + scpd->data->ctl_offs;
+	void __iomem *net_sram_addr = scp->base + NETSYS_S_SRAM_CON;
+	u32 val;
+	int ret, tmp;
+
+	ret = scpsys_regulator_enable(scpd);
+	if (ret < 0)
+		return ret;
+
+	scpsys_extb_iso_down(scpd);
+
+	ret = scpsys_clk_enable(scpd->clk, MAX_CLKS);
+	if (ret)
+		goto err_clk;
+	
+	/* subsys power on */
+	val = readl(ctl_addr);
+	val |= PWR_ON_BIT;
+	writel(val, ctl_addr);
+	val |= PWR_ON_2ND_BIT;
+	writel(val, ctl_addr);
+
+	/* wait until PWR_ACK = 1 */
+	ret = readx_poll_timeout(scpsys_domain_is_on, scpd, tmp, tmp > 0,
+				 MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
+	if (ret < 0)
+		goto err_pwr_ack;
+
+	val &= ~PWR_CLK_DIS_BIT;
+	writel(val, ctl_addr);
+
+	val &= ~PWR_ISO_BIT;
+	writel(val, ctl_addr);
+
+	/*NET SYS power_con [8] = 0*/
+	val &= 0xfffffeff;
+	writel(val, ctl_addr);
+
+	val |= PWR_RST_B_BIT;
+	writel(val, ctl_addr);
+
+	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_STRICT_BUSP)) {
+		/*
+		 * In few Mediatek platforms(e.g. MT6779), the bus protect
+		 * policy is stricter, which leads to bus protect release must
+		 * be prior to bus access.
+		 */
+		ret = scpsys_netsys_sram_enable(scpd, net_sram_addr);
+		if (ret < 0)
+			goto err_pwr_ack;
+
+		ret = scpsys_bus_protect_disable(scpd);
+		if (ret < 0)
+			goto err_pwr_ack;
+
+		ret = scpsys_clk_enable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
+		if (ret < 0)
+			goto err_pwr_ack;
+	} else {
+		ret = scpsys_clk_enable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
+		if (ret < 0)
+			goto err_pwr_ack;
+
+		ret = scpsys_netsys_sram_enable(scpd, net_sram_addr);
+		if (ret < 0)
+			goto err_sram;
+
+		ret = scpsys_bus_protect_disable(scpd);
+		if (ret < 0)
+			goto err_sram;
+	}
+
+	return 0;
+
+err_sram:
+	scpsys_clk_disable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
+err_pwr_ack:
+	scpsys_clk_disable(scpd->clk, MAX_CLKS);
+err_clk:
+	scpsys_extb_iso_up(scpd);
+	scpsys_regulator_disable(scpd);
+
+	dev_err(scp->dev, "Failed to power on domain %s\n", genpd->name);
+
+	return ret;
+}
+
+static int scpsys_netsys_power_off(struct generic_pm_domain *genpd)
+{
+	struct scp_domain *scpd = container_of(genpd, struct scp_domain, genpd);
+	struct scp *scp = scpd->scp;
+	void __iomem *ctl_addr = scp->base + scpd->data->ctl_offs;
+	void __iomem *net_sram_addr = scp->base + NETSYS_S_SRAM_CON;
+	u32 val;
+	int ret, tmp;
+
+	ret = scpsys_bus_protect_enable(scpd);
+	if (ret < 0)
+		goto out;
+
+	/*NET SYS power_con [8] = 1*/
+	val = readl(ctl_addr) | 0x00000100;
+	writel(val, ctl_addr);
+
+	ret = scpsys_netsys_sram_disable(scpd, net_sram_addr);
+	if (ret < 0)
+		goto out;
+
+	scpsys_clk_disable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
+
+	/* subsys power off */
+	val = readl(ctl_addr) | PWR_ISO_BIT;
 	writel(val, ctl_addr);
 
 	val &= ~PWR_RST_B_BIT;
@@ -319,11 +1106,13 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
 	if (ret < 0)
 		goto out;
 
-	for (i = 0; i < MAX_CLKS && scpd->clk[i]; i++)
-		clk_disable_unprepare(scpd->clk[i]);
+	scpsys_clk_disable(scpd->clk, MAX_CLKS);
 
-	if (scpd->supply)
-		regulator_disable(scpd->supply);
+	scpsys_extb_iso_up(scpd);
+
+	ret = scpsys_regulator_disable(scpd);
+	if (ret < 0)
+		goto out;
 
 	return 0;
 
@@ -331,6 +1120,48 @@ out:
 	dev_err(scp->dev, "Failed to power off domain %s\n", genpd->name);
 
 	return ret;
+}
+
+static int init_subsys_clks(struct platform_device *pdev,
+		const char *prefix, struct clk **clk)
+{
+	struct device_node *node = pdev->dev.of_node;
+	u32 prefix_len, sub_clk_cnt = 0;
+	struct property *prop;
+	const char *clk_name;
+
+	if (!node) {
+		dev_err(&pdev->dev, "Cannot find scpsys node: %ld\n",
+			PTR_ERR(node));
+		return PTR_ERR(node);
+	}
+
+	prefix_len = strlen(prefix);
+
+	of_property_for_each_string(node, "clock-names", prop, clk_name) {
+		if (!strncmp(clk_name, prefix, prefix_len) &&
+				(clk_name[prefix_len] == '-')) {
+			if (sub_clk_cnt >= MAX_SUBSYS_CLKS) {
+				dev_err(&pdev->dev,
+					"subsys clk out of range %d\n",
+					sub_clk_cnt);
+				return -ENOMEM;
+			}
+
+			clk[sub_clk_cnt] = devm_clk_get(&pdev->dev,
+						clk_name);
+
+			if (IS_ERR(clk)) {
+				dev_err(&pdev->dev,
+					"Subsys clk read fail %ld\n",
+					PTR_ERR(clk));
+				return PTR_ERR(clk);
+			}
+			sub_clk_cnt++;
+		}
+	}
+
+	return sub_clk_cnt;
 }
 
 static void init_clks(struct platform_device *pdev, struct clk **clk)
@@ -341,6 +1172,51 @@ static void init_clks(struct platform_device *pdev, struct clk **clk)
 		clk[i] = devm_clk_get(&pdev->dev, clk_names[i]);
 }
 
+static int mtk_pd_set_performance(struct generic_pm_domain *genpd,
+				  unsigned int state)
+{
+	int i;
+	struct scp_domain *scpd =
+		container_of(genpd, struct scp_domain, genpd);
+	struct scp_event_data scpe;
+	struct scp *scp = scpd->scp;
+	struct genpd_onecell_data *pd_data = &scp->pd_data;
+
+	for (i = 0; i < pd_data->num_domains; i++) {
+		if (genpd == pd_data->domains[i]) {
+			dev_dbg(scp->dev, "%d. %s = %d\n",
+				i, genpd->name, state);
+			break;
+		}
+	}
+
+	if (i == pd_data->num_domains)
+		return 0;
+
+	scpe.event_type = MTK_SCPSYS_PSTATE;
+	scpe.genpd = genpd;
+	scpe.domain_id = i;
+	blocking_notifier_call_chain(&scpsys_notifier_list, state, &scpe);
+
+	return 0;
+}
+
+static unsigned int mtk_pd_get_performance(struct generic_pm_domain *genpd,
+					   struct dev_pm_opp *opp)
+{
+	struct device_node *np;
+	unsigned int val = 0;
+
+	np = dev_pm_opp_get_of_node(opp);
+
+	if (np) {
+		of_property_read_u32(np, "opp-level", &val);
+		of_node_put(np);
+	}
+
+	return val;
+}
+
 static struct scp *init_scp(struct platform_device *pdev,
 			const struct scp_domain_data *scp_domain_data, int num,
 			const struct scp_ctrl_reg *scp_ctrl_reg,
@@ -348,7 +1224,7 @@ static struct scp *init_scp(struct platform_device *pdev,
 {
 	struct genpd_onecell_data *pd_data;
 	struct resource *res;
-	int i, j;
+	int i, j, count;
 	struct scp *scp;
 	struct clk *clk[CLK_MAX];
 
@@ -388,6 +1264,28 @@ static struct scp *init_scp(struct platform_device *pdev,
 		return ERR_CAST(scp->infracfg);
 	}
 
+	scp->smi_common = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
+			"smi_comm");
+
+	if (scp->smi_common == ERR_PTR(-ENODEV)) {
+		scp->smi_common = NULL;
+	} else if (IS_ERR(scp->smi_common)) {
+		dev_err(&pdev->dev, "Cannot find smi_common controller: %ld\n",
+				PTR_ERR(scp->smi_common));
+		return ERR_CAST(scp->smi_common);
+	}
+
+	scp->infracfg_nao = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
+			"infracfg_nao");
+
+	if (scp->infracfg_nao == ERR_PTR(-ENODEV)) {
+		scp->infracfg_nao = NULL;
+	} else if (IS_ERR(scp->infracfg_nao)) {
+		dev_err(&pdev->dev, "Cannot find infracfg_nao controller: %ld\n",
+				PTR_ERR(scp->infracfg_nao));
+		return ERR_CAST(scp->infracfg_nao);
+	}
+
 	for (i = 0; i < num; i++) {
 		struct scp_domain *scpd = &scp->domains[i];
 		const struct scp_domain_data *data = &scp_domain_data[i];
@@ -409,29 +1307,71 @@ static struct scp *init_scp(struct platform_device *pdev,
 		struct scp_domain *scpd = &scp->domains[i];
 		struct generic_pm_domain *genpd = &scpd->genpd;
 		const struct scp_domain_data *data = &scp_domain_data[i];
+		int clk_cnt;
 
 		pd_data->domains[i] = genpd;
 		scpd->scp = scp;
 
 		scpd->data = data;
 
-		for (j = 0; j < MAX_CLKS && data->clk_id[j]; j++) {
-			struct clk *c = clk[data->clk_id[j]];
+		if (data->clk_id[0]) {
+			for (j = 0; j < MAX_CLKS && data->clk_id[j]; j++) {
+				struct clk *c = clk[data->clk_id[j]];
 
-			if (IS_ERR(c)) {
-				dev_err(&pdev->dev, "%s: clk unavailable\n",
-					data->name);
-				return ERR_CAST(c);
+				if (IS_ERR(c)) {
+					dev_err(&pdev->dev,
+						"%s: clk unavailable\n",
+						data->name);
+					return ERR_CAST(c);
+				}
+
+				scpd->clk[j] = c;
 			}
+		} else if (data->basic_clk_name[0]) {
+			for (j = 0; j < MAX_CLKS &&
+					data->basic_clk_name[j]; j++)
+				scpd->clk[j] = devm_clk_get(&pdev->dev,
+						data->basic_clk_name[j]);
+		}
 
-			scpd->clk[j] = c;
+		if (data->subsys_clk_prefix) {
+			clk_cnt = init_subsys_clks(pdev,
+					data->subsys_clk_prefix,
+					scpd->subsys_clk);
+			if (clk_cnt < 0) {
+				dev_err(&pdev->dev,
+					"%s: subsys clk unavailable\n",
+					data->name);
+				return ERR_PTR(clk_cnt);
+			}
 		}
 
 		genpd->name = data->name;
-		genpd->power_off = scpsys_power_off;
-		genpd->power_on = scpsys_power_on;
+
+		if (MTK_SCPD_CAPS(scpd, MTK_SCPD_MD_OPS)) {
+			genpd->power_off = scpsys_md_power_off;
+			genpd->power_on = scpsys_md_power_on;
+		} else if (MTK_SCPD_CAPS(scpd, MTK_SCPD_NETSYS_OPS)){
+			genpd->power_off = scpsys_netsys_power_off;
+			genpd->power_on = scpsys_netsys_power_on;
+		} else {
+			genpd->power_off = scpsys_power_off;
+			genpd->power_on = scpsys_power_on;
+		}
 		if (MTK_SCPD_CAPS(scpd, MTK_SCPD_ACTIVE_WAKEUP))
 			genpd->flags |= GENPD_FLAG_ACTIVE_WAKEUP;
+		if (MTK_SCPD_CAPS(scpd, MTK_SCPD_ALWAYS_ON))
+			genpd->flags |= GENPD_FLAG_ALWAYS_ON;
+		if (MTCMOS_BRINGUP)
+			genpd->flags |= GENPD_FLAG_ALWAYS_ON;
+
+		count = of_count_phandle_with_args(pdev->dev.of_node,
+			   "operating-points-v2", NULL);
+		if (count > 0) {
+			genpd->set_performance_state = mtk_pd_set_performance;
+			genpd->opp_to_performance_state =
+				mtk_pd_get_performance;
+		}
 	}
 
 	return scp;
@@ -446,7 +1386,7 @@ static void mtk_register_power_domains(struct platform_device *pdev,
 	for (i = 0; i < num; i++) {
 		struct scp_domain *scpd = &scp->domains[i];
 		struct generic_pm_domain *genpd = &scpd->genpd;
-		bool on;
+		bool on = false;
 
 		/*
 		 * Initially turn on all domains to make the domains usable
@@ -454,8 +1394,12 @@ static void mtk_register_power_domains(struct platform_device *pdev,
 		 * software.  The unused domains will be switched off during
 		 * late_init time.
 		 */
-		on = !WARN_ON(genpd->power_on(genpd) < 0);
-
+		if(strcmp(genpd->name,"conn")){
+			if(strcmp(genpd->name,"ssusb_phy")==0)
+				dev_err(&pdev->dev, "Skip ssusb_phy pwr_on \n");
+			else
+				on = !WARN_ON(genpd->power_on(genpd) < 0); 
+		}
 		pm_genpd_init(genpd, NULL, !on);
 	}
 
@@ -967,6 +1911,589 @@ static const struct scp_soc_data mt6797_data = {
 	.bus_prot_reg_update = true,
 };
 
+/* DOTY-MT6890-BOOT-P0-SCPSYS-BEGIN */
+static const struct scp_domain_data scp_domain_data_mt6779[] = {
+	[MT6779_POWER_DOMAIN_AUDIO] = {
+		.name = "audio",
+		.sta_mask = BIT(24),
+		.ctl_offs = 0x31C,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+		.basic_clk_name = {"audio"},
+		.caps = MTK_SCPD_STRICT_BUSP,
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, MT6779_IFR_SET, MT6779_IFR_CLR,
+				0, MT6779_IFR_STA1, BIT(31), BIT(31), 0),
+		},
+	},
+
+	[MT6779_POWER_DOMAIN_MM] = {
+		.name = "mm",
+		.sta_mask = BIT(3),
+		.ctl_offs = 0x30C,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+		.basic_clk_name = {"mm"},
+		.subsys_clk_prefix = "mm",
+		.caps = MTK_SCPD_STRICT_BUSP,
+		.bp_table = {
+
+			BUS_PROT(IFR_TYPE, MT6779_IFRMM_SET,
+				MT6779_IFRMM_CLR, 0, MT6779_IFRMM_STA1,
+				BIT(0) | BIT(1) | BIT(3) | BIT(4) |
+					BIT(5) | BIT(6),
+				BIT(0) | BIT(1) | BIT(3) | BIT(4) |
+					BIT(5) | BIT(6), 0),
+			BUS_PROT(SMI_TYPE, MT6779_SMI_SET, MT6779_SMI_CLR,
+				0, MT6779_SMI_STA,
+				GENMASK(7, 0), GENMASK(7, 0), 0),
+			BUS_PROT(IFR_TYPE, MT6779_IFR1_SET,
+				MT6779_IFR1_CLR, 0, MT6779_IFR1_STA1,
+				BIT(16) | BIT(17), BIT(16) | BIT(17), 0),
+
+			BUS_PROT(IFR_TYPE, MT6779_IFR_SET, MT6779_IFR_CLR,
+				0, MT6779_IFR_STA1,
+				BIT(10) | BIT(11), BIT(10) | BIT(11), 0),
+			/* WAY EN1 */
+			BUS_PROT(IFR_WAYEN_TYPE, MT6779_IFR_SI0_SET,
+				MT6779_IFR_SI0_CLR, 0, MT6779_IFR_SI0_STA,
+				BIT(6), BIT(24), BIT(24)),
+			/* WAY EN2 */
+			BUS_PROT(IFR_WAYEN_TYPE, 0x0, 0x0,
+				MT6779_IFR_PDN_SI2_CTL, MT6779_IFR_SI2_STA,
+				BIT(5), BIT(14), BIT(14)),
+
+			BUS_PROT(IFR_TYPE, MT6779_IFR_SET, MT6779_IFR_CLR,
+				0, MT6779_IFR_STA1, BIT(6), BIT(6), 0),
+		},
+	},
+
+	[MT6779_POWER_DOMAIN_VDE] = {
+		.name = "vde",
+		.sta_mask = BIT(31),
+		.ctl_offs = 0x300,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+		.basic_clk_name = {"vdec"},
+		.subsys_clk_prefix = "vdec",
+		.caps = MTK_SCPD_STRICT_BUSP,
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, MT6779_IFRMM_SET,
+				MT6779_IFRMM_CLR, 0, MT6779_IFRMM_STA1,
+				BIT(1), BIT(1), 0),
+			BUS_PROT(SMI_TYPE, MT6779_SMI_SET,
+				MT6779_SMI_CLR, 0, MT6779_SMI_STA,
+				BIT(2), BIT(2), 0),
+		},
+	},
+
+	[MT6779_POWER_DOMAIN_CAM] = {
+		.name = "cam",
+		.sta_mask = BIT(25),
+		.ctl_offs = 0x324,
+		.sram_pdn_bits = GENMASK(9, 8),
+		.sram_pdn_ack_bits = GENMASK(13, 12),
+		.basic_clk_name = {"cam", "ccu"}, /* cam needs 2 clkmuxes */
+		.subsys_clk_prefix = "cam",
+		.caps = MTK_SCPD_STRICT_BUSP,
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, MT6779_IFRMM_SET,
+				MT6779_IFRMM_CLR, 0, MT6779_IFRMM_STA1,
+				BIT(4) | BIT(5) | BIT(9) | BIT(13),
+				BIT(4) | BIT(5) | BIT(9) | BIT(13), 0),
+			BUS_PROT(IFR_TYPE, MT6779_IFR_SET, MT6779_IFR_CLR,
+				0, MT6779_IFR_STA1, BIT(28), BIT(28), 0),
+			BUS_PROT(IFR_TYPE, MT6779_IFRMM_SET,
+				MT6779_IFRMM_CLR, 0, MT6779_IFRMM_STA1,
+				BIT(11), BIT(11), 0),
+			BUS_PROT(SMI_TYPE, MT6779_SMI_SET, MT6779_SMI_CLR,
+				0, MT6779_SMI_STA,
+				BIT(6) | BIT(7), BIT(6) | BIT(7), 0),
+		},
+	},
+
+	[MT6779_POWER_DOMAIN_ISP] = {
+		.name = "isp",
+		.sta_mask = BIT(5),
+		.ctl_offs = 0x308,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+		.basic_clk_name = {"isp"},
+		.subsys_clk_prefix = "isp",
+		.caps = MTK_SCPD_STRICT_BUSP,
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, MT6779_IFRMM_SET,
+				MT6779_IFRMM_CLR, 0, MT6779_IFRMM_STA1,
+				BIT(3) | BIT(8), BIT(3) | BIT(8), 0),
+			BUS_PROT(IFR_TYPE, MT6779_IFRMM_SET,
+				MT6779_IFRMM_CLR, 0, MT6779_IFRMM_STA1,
+				BIT(10), BIT(10), 0),
+			BUS_PROT(SMI_TYPE, MT6779_SMI_SET, MT6779_SMI_CLR,
+				0, MT6779_SMI_STA, BIT(4), BIT(4), 0),
+		},
+	},
+
+	[MT6779_POWER_DOMAIN_IPE] = {
+		.name = "ipe",
+		.sta_mask = BIT(13),
+		.ctl_offs = 0x350,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+		.basic_clk_name = {"ipe"},
+		.subsys_clk_prefix = "ipe",
+		.caps = MTK_SCPD_STRICT_BUSP,
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, MT6779_IFRMM_SET,
+				MT6779_IFRMM_CLR, 0, MT6779_IFRMM_STA1,
+				BIT(6), BIT(6), 0),
+			BUS_PROT(SMI_TYPE, MT6779_SMI_SET, MT6779_SMI_CLR,
+				0, MT6779_SMI_STA, BIT(5), BIT(5), 0),
+		},
+	},
+
+	[MT6779_POWER_DOMAIN_VEN] = {
+		.name = "ven",
+		.sta_mask = BIT(21),
+		.ctl_offs = 0x304,
+		.sram_pdn_bits = GENMASK(11, 8),
+		.sram_pdn_ack_bits = GENMASK(15, 12),
+		.basic_clk_name = {"venc"},
+		.subsys_clk_prefix = "venc",
+		.caps = MTK_SCPD_STRICT_BUSP,
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, MT6779_IFRMM_SET,
+				MT6779_IFRMM_CLR, 0, MT6779_IFRMM_STA1,
+				BIT(0), BIT(0), 0),
+			BUS_PROT(SMI_TYPE, MT6779_SMI_SET,
+				MT6779_SMI_CLR, 0, MT6779_SMI_STA,
+				BIT(3), BIT(3), 0),
+		},
+	},
+
+	[MT6779_POWER_DOMAIN_MFG0] = {
+		.name = "mfg0",
+		.sta_mask = BIT(4),
+		.ctl_offs = 0x328,
+		.caps = MTK_SCPD_STRICT_BUSP,
+	},
+
+	[MT6779_POWER_DOMAIN_MFG1] = {
+		.name = "mfg1",
+		.sta_mask = BIT(7),
+		.ctl_offs = 0x32C,
+		.sram_pdn_bits = GENMASK(9, 8),
+		.sram_pdn_ack_bits = GENMASK(13, 12),
+		.caps = MTK_SCPD_STRICT_BUSP,
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, MT6779_IFR1_SET,
+				MT6779_IFR1_CLR, 0, MT6779_IFR1_STA1,
+				BIT(19) | BIT(20) | BIT(21),
+				BIT(19) | BIT(20) | BIT(21), 0),
+			BUS_PROT(IFR_TYPE, MT6779_IFR_SET,
+				MT6779_IFR_CLR, 0, MT6779_IFR_STA1,
+				BIT(21) | BIT(22), BIT(21) | BIT(22), 0),
+		},
+	},
+
+	[MT6779_POWER_DOMAIN_MFG2] = {
+		.name = "mfg2",
+		.sta_mask = BIT(20),
+		.ctl_offs = 0x330,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+		.caps = MTK_SCPD_STRICT_BUSP,
+	},
+
+	[MT6779_POWER_DOMAIN_MFG3] = {
+		.name = "mfg3",
+		.sta_mask = BIT(22),
+		.ctl_offs = 0x334,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+		.caps = MTK_SCPD_STRICT_BUSP,
+	},
+
+	[MT6779_POWER_DOMAIN_CONN] = {
+		.name = "conn",
+		.sta_mask = BIT(1),
+		.ctl_offs = 0x320,
+		.caps = MTK_SCPD_STRICT_BUSP,
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, MT6779_IFR_SET, MT6779_IFR_CLR,
+				0, MT6779_IFR_STA1, BIT(13) | BIT(18),
+				BIT(13) | BIT(18), 0),
+			BUS_PROT(IFR_TYPE, MT6779_IFR_SET, MT6779_IFR_CLR,
+				0, MT6779_IFR_STA1, BIT(14), BIT(14), 0),
+			BUS_PROT(IFR_TYPE, MT6779_IFR1_SET,
+				MT6779_IFR1_CLR, 0, MT6779_IFR1_STA1,
+				BIT(10), BIT(10), 0),
+		},
+	},
+
+	[MT6779_POWER_DOMAIN_MD] = {
+		.name = "md",
+		.sta_mask = BIT(0),
+		.ctl_offs = 0x318,
+		.caps = MTK_SCPD_STRICT_BUSP | MTK_SCPD_MD_OPS,
+		.extb_iso_offs = 0x3B0,
+		.extb_iso_bits = BIT(0) | BIT(1),
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, MT6779_IFR_SET, MT6779_IFR_CLR, 0,
+				 MT6779_IFR_STA1, BIT(7), BIT(7), 0),
+			BUS_PROT(IFR_TYPE, MT6779_IFR_SET, MT6779_IFR_CLR, 0,
+				 MT6779_IFR_STA1, BIT(3) | BIT(4),
+				 BIT(3) | BIT(4), 0),
+			BUS_PROT(IFR_TYPE, MT6779_IFR1_SET, MT6779_IFR1_CLR, 0,
+				 MT6779_IFR1_STA1, BIT(6), BIT(6), 0),
+		},
+	},
+
+	[MT6779_POWER_DOMAIN_INFRA] = {	/* pseudo infra power domain */
+		.name = "infra",
+		.sta_mask = BIT(6),
+		.ctl_offs = 0x3C4,
+		.caps = MTK_SCPD_STRICT_BUSP | MTK_SCPD_ALWAYS_ON,
+	},
+};
+
+
+static const struct scp_subdomain scp_subdomain_mt6779[] = {
+	{MT6779_POWER_DOMAIN_MM, MT6779_POWER_DOMAIN_VDE},
+	{MT6779_POWER_DOMAIN_MM, MT6779_POWER_DOMAIN_CAM},
+	{MT6779_POWER_DOMAIN_MM, MT6779_POWER_DOMAIN_ISP},
+	{MT6779_POWER_DOMAIN_MM, MT6779_POWER_DOMAIN_IPE},
+	{MT6779_POWER_DOMAIN_MM, MT6779_POWER_DOMAIN_VEN},
+
+	{MT6779_POWER_DOMAIN_MFG0, MT6779_POWER_DOMAIN_MFG1},
+	{MT6779_POWER_DOMAIN_MFG1, MT6779_POWER_DOMAIN_MFG2},
+	{MT6779_POWER_DOMAIN_MFG2, MT6779_POWER_DOMAIN_MFG3},
+};
+
+
+static const struct scp_domain_data scp_domain_data_mt6880[] = {
+	[MT6880_POWER_DOMAIN_PEXTP_D_2LX1] = {
+		.name = "pextp_d_2lx1",
+		.sta_mask = BIT(12),
+		.ctl_offs = 0x330,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+	},
+	[MT6880_POWER_DOMAIN_MD1] = {
+		.name = "md1",
+		.sta_mask = BIT(0),
+		.ctl_offs = 0x300,
+		.caps = MTK_SCPD_MD_OPS,
+		.extb_iso_offs = 0x398,
+		.extb_iso_bits = 0x3,
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, 0x02A0, 0x02A4, 0x0220, 0x0228,
+				MT6880_TOP_AXI_PROT_EN_MD1,MT6880_TOP_AXI_PROT_EN_MD1,0),
+			BUS_PROT(IFR_TYPE, 0x0B84, 0x0B88, 0x0B80, 0x0B90,
+				MT6880_TOP_AXI_PROT_EN_INFRA_VDNR_MD1,MT6880_TOP_AXI_PROT_EN_INFRA_VDNR_MD1,0),
+			BUS_PROT(IFR_TYPE, 0x0BA4, 0x0BA8, 0x0BA0, 0x0BB0,
+				MT6880_TOP_AXI_PROT_EN_INFRA_VDNR_1_MD1,MT6880_TOP_AXI_PROT_EN_INFRA_VDNR_1_MD1,0),
+		},
+	},
+	[MT6880_POWER_DOMAIN_CONN] = {
+		.name = "conn",
+		.sta_mask = BIT(1),
+		.ctl_offs = 0x304,
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, 0x02A0, 0x02A4, 0x0220, 0x0228,
+				MT6880_TOP_AXI_PROT_EN_CONN,MT6880_TOP_AXI_PROT_EN_CONN,0),
+			BUS_PROT(IFR_TYPE, 0x02A0, 0x02A4, 0x0220, 0x0228,
+				MT6880_TOP_AXI_PROT_EN_CONN_2ND,MT6880_TOP_AXI_PROT_EN_CONN_2ND,0),
+			BUS_PROT(IFR_TYPE, 0x02A0, 0x02A4, 0x0220, 0x0228,
+				MT6880_TOP_AXI_PROT_EN_CONN_3RD,MT6880_TOP_AXI_PROT_EN_CONN_3RD,0),
+			BUS_PROT(IFR_TYPE, 0x02A0, 0x02A4, 0x0220, 0x0228,
+				MT6880_TOP_AXI_PROT_EN_CONN_4RD,MT6880_TOP_AXI_PROT_EN_CONN_4RD,0),
+		},
+	},
+	[MT6880_POWER_DOMAIN_MSDC] = {
+		.name = "msdc",
+		.sta_mask = BIT(30),
+		.ctl_offs = 0x3A4,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, 0x0BA4, 0x0BA8, 0x0BA0, 0x0BB0,
+				MT6880_TOP_AXI_PROT_EN_INFRA_VDNR_1_MSDC,MT6880_TOP_AXI_PROT_EN_INFRA_VDNR_1_MSDC,0),
+		},
+	},
+	[MT6880_POWER_DOMAIN_SSUSB] = {
+		.name = "ssusb",
+		.sta_mask = BIT(16),
+		.ctl_offs = 0x340,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, 0x0BA4, 0x0BA8, 0x0BA0, 0x0BB0,
+				MT6880_TOP_AXI_PROT_EN_INFRA_VDNR_1_SSUSB,MT6880_TOP_AXI_PROT_EN_INFRA_VDNR_1_SSUSB,0),
+			BUS_PROT(IFR_TYPE, 0x0BA4, 0x0BA8, 0x0BA0, 0x0BB0,
+				MT6880_TOP_AXI_PROT_EN_INFRA_VDNR_3_SSUSB,MT6880_TOP_AXI_PROT_EN_INFRA_VDNR_3_SSUSB,0),
+		},
+	},
+	[MT6880_POWER_DOMAIN_SSUSB_PHY] = {
+		.name = "ssusb_phy",
+		.sta_mask = BIT(7),
+		.ctl_offs = 0x31C,
+	},
+	[MT6880_POWER_DOMAIN_PEXTP_D_2LX1_PHY] = {
+		.name = "pextp_d_2lx1_phy",
+		.sta_mask = BIT(3),
+		.ctl_offs = 0x30C,
+	},
+};
+
+
+static const struct scp_subdomain scp_subdomain_mt6880[] = {
+	{MT6880_POWER_DOMAIN_PEXTP_D_2LX1_PHY, MT6880_POWER_DOMAIN_PEXTP_D_2LX1},
+	{MT6880_POWER_DOMAIN_SSUSB_PHY, MT6880_POWER_DOMAIN_SSUSB},
+};
+
+
+static const struct scp_domain_data scp_domain_data_mt6890[] = {
+	[MT6890_POWER_DOMAIN_MFG0] = {
+		.name = "mfg0",
+		.sta_mask = BIT(2),
+		.ctl_offs = 0x308,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+		.clk_id = {CLK_MFG},
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, 0x0714, 0x0718, 0x0710, 0x0724,
+				MT6890_TOP_AXI_PROT_EN_2_MFG0,MT6890_TOP_AXI_PROT_EN_2_MFG0,0),
+			BUS_PROT(IFR_TYPE, 0x02A0, 0x02A4, 0x0220, 0x0228,
+				MT6890_TOP_AXI_PROT_EN_MFG0,MT6890_TOP_AXI_PROT_EN_MFG0,0),
+			BUS_PROT(IFR_TYPE, 0x02A8, 0x02AC, 0x0250, 0x0258,
+				MT6890_TOP_AXI_PROT_EN_1_MFG0,MT6890_TOP_AXI_PROT_EN_1_MFG0,0),
+			BUS_PROT(IFR_TYPE, 0x0714, 0x0718, 0x0710, 0x0724,
+				MT6890_TOP_AXI_PROT_EN_2_MFG0_2ND,MT6890_TOP_AXI_PROT_EN_2_MFG0_2ND,0),
+		},
+	},
+	[MT6890_POWER_DOMAIN_PEXTP_D_2LX1] = {
+		.name = "pextp_d_2lx1",
+		.sta_mask = BIT(12),
+		.ctl_offs = 0x330,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+	},
+	[MT6890_POWER_DOMAIN_PEXTP_R_2LX1] = {
+		.name = "pextp_r_2lx1",
+		.sta_mask = BIT(13),
+		.ctl_offs = 0x334,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+	},
+	[MT6890_POWER_DOMAIN_PEXTP_R_1LX2] = {
+		.name = "pextp_r_1lx2",
+		.sta_mask = BIT(14),
+		.ctl_offs = 0x338,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+	},
+	[MT6890_POWER_DOMAIN_ETH] = {
+		.name = "eth",
+		.sta_mask = BIT(15),
+		.ctl_offs = 0x33C,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+		.clk_id = {CLK_ETH1, CLK_ETH2, CLK_ETH3, CLK_ETH4},
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, 0x0BA4, 0x0BA8, 0x0BA0, 0x0BB0,
+				MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_1_ETH,MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_1_ETH,0),
+		},
+	},
+	[MT6890_POWER_DOMAIN_DIS] = {
+		.name = "dis",
+		.sta_mask = BIT(20),
+		.ctl_offs = 0x350,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+		.basic_clk_name = {"disp"},
+		.subsys_clk_prefix = "disp",
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, 0x02D4, 0x02D8, 0x02D0, 0x02EC,
+				MT6890_TOP_AXI_PROT_EN_MM_DIS,MT6890_TOP_AXI_PROT_EN_MM_DIS,0),
+			BUS_PROT(IFR_TYPE, 0x02A0, 0x02A4, 0x0220, 0x0228,
+				MT6890_TOP_AXI_PROT_EN_DIS,MT6890_TOP_AXI_PROT_EN_DIS,0),
+		},
+	},
+	[MT6890_POWER_DOMAIN_AUDIO] = {
+		.name = "audio",
+		.sta_mask = BIT(21),
+		.ctl_offs = 0x354,
+		/*BEGIN Make sure MD mtcmos keep on when suspend,add by haowei.cheng*/
+		.caps = MTK_SCPD_ACTIVE_WAKEUP,
+		/*END Make sure MD mtcmos keep on when suspend,add by haowei.cheng*/
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+		.clk_id = {CLK_AUDIO},
+	},
+	[MT6890_POWER_DOMAIN_MD1] = {
+		.name = "md1",
+		.sta_mask = BIT(0),
+		.ctl_offs = 0x300,
+		/*BEGIN Make sure MD mtcmos keep on when suspend,add by haowei.cheng*/
+		.caps = MTK_SCPD_MD_OPS | MTK_SCPD_ACTIVE_WAKEUP,
+		/*END Make sure MD mtcmos keep on when suspend,add by haowei.cheng*/
+		.extb_iso_offs = 0x398,
+		.extb_iso_bits = 0x3,
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, 0x02A0, 0x02A4, 0x0220, 0x0228,
+				MT6890_TOP_AXI_PROT_EN_MD1,MT6890_TOP_AXI_PROT_EN_MD1,0),
+			BUS_PROT(IFR_TYPE, 0x0B84, 0x0B88, 0x0B80, 0x0B90,
+				MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_MD1,MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_MD1,0),
+			BUS_PROT(IFR_TYPE, 0x0BA4, 0x0BA8, 0x0BA0, 0x0BB0,
+				MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_1_MD1,MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_1_MD1,0),
+		},
+	},
+	[MT6890_POWER_DOMAIN_EIP97] = {
+		.name = "eip97",
+		.sta_mask = BIT(22),
+		.ctl_offs = 0x328,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.clk_id = {CLK_EIP97},
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, 0x0B84, 0x0B88, 0x0B80, 0x0B90,
+		 	MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_EIP97,MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_EIP97,0),
+			BUS_PROT(IFR_TYPE, 0x0BA4, 0x0BA8, 0x0BA0, 0x0BB0,
+				MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_1_EIP97,MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_1_EIP97,0),
+		},
+	},
+	[MT6890_POWER_DOMAIN_CONN] = {
+		.name = "conn",
+		.sta_mask = BIT(1),
+		.ctl_offs = 0x304,
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, 0x02A0, 0x02A4, 0x0220, 0x0228,
+				MT6890_TOP_AXI_PROT_EN_CONN,MT6890_TOP_AXI_PROT_EN_CONN,0),
+			BUS_PROT(IFR_TYPE, 0x02A0, 0x02A4, 0x0220, 0x0228,
+				MT6890_TOP_AXI_PROT_EN_CONN_2ND,MT6890_TOP_AXI_PROT_EN_CONN_2ND,0),
+			BUS_PROT(IFR_TYPE, 0x02A0, 0x02A4, 0x0220, 0x0228,
+				MT6890_TOP_AXI_PROT_EN_CONN_3RD,MT6890_TOP_AXI_PROT_EN_CONN_3RD,0),
+			BUS_PROT(IFR_TYPE, 0x02A0, 0x02A4, 0x0220, 0x0228,
+				MT6890_TOP_AXI_PROT_EN_CONN_4RD,MT6890_TOP_AXI_PROT_EN_CONN_4RD,0),
+		},
+	},
+	[MT6890_POWER_DOMAIN_MSDC] = {
+		.name = "msdc",
+		.sta_mask = BIT(30),
+		.ctl_offs = 0x3A4,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, 0x0BA4, 0x0BA8, 0x0BA0, 0x0BB0,
+				MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_1_MSDC,MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_1_MSDC,0),
+		},
+	},
+	[MT6890_POWER_DOMAIN_SSUSB] = {
+		.name = "ssusb",
+		.sta_mask = BIT(16),
+		.ctl_offs = 0x340,
+		.sram_pdn_bits = GENMASK(8, 8),
+		.sram_pdn_ack_bits = GENMASK(12, 12),
+		.bp_table = {
+			BUS_PROT(IFR_TYPE, 0x0BA4, 0x0BA8, 0x0BA0, 0x0BB0,
+				MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_1_SSUSB,MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_1_SSUSB,0),
+			BUS_PROT(IFR_TYPE, 0x0BA4, 0x0BA8, 0x0BA0, 0x0BB0,
+				MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_3_SSUSB,MT6890_TOP_AXI_PROT_EN_INFRA_VDNR_3_SSUSB,0),
+		},
+	},
+	[MT6890_POWER_DOMAIN_SSUSB_PHY] = {
+		.name = "ssusb_phy",
+		.sta_mask = BIT(7),
+		.ctl_offs = 0x31C,
+	},
+	[MT6890_POWER_DOMAIN_SGMII_0_PHY] = {
+		.name = "sgmii_0_phy",
+		.sta_mask = BIT(8),
+		.ctl_offs = 0x358,
+	},
+	[MT6890_POWER_DOMAIN_SGMII_0_TOP] = {
+		.name = "sgmii_0_top",
+		.sta_mask = BIT(17),
+		.ctl_offs = 0x360,
+	},
+	[MT6890_POWER_DOMAIN_SGMII_1_PHY] = {
+		.name = "sgmii_1_phy",
+		.sta_mask = BIT(10),
+		.ctl_offs = 0x35C,
+	},
+	[MT6890_POWER_DOMAIN_SGMII_1_TOP] = {
+		.name = "sgmii_1_top",
+		.sta_mask = BIT(18),
+		.ctl_offs = 0x364,
+	},
+	[MT6890_POWER_DOMAIN_PEXTP_D_2LX1_PHY] = {
+		.name = "pextp_d_2lx1_phy",
+		.sta_mask = BIT(3),
+		.ctl_offs = 0x30C,
+	},
+	[MT6890_POWER_DOMAIN_PEXTP_R_2LX1_PHY] = {
+		.name = "pextp_r_2lx1_phy",
+		.sta_mask = BIT(4),
+		.ctl_offs = 0x310,
+	},
+	[MT6890_POWER_DOMAIN_PEXTP_R_1LX2_0P_PHY] = {
+		.name = "pextp_r_1lx2_0p_phy",
+		.sta_mask = BIT(5),
+		.ctl_offs = 0x314,
+	},
+	[MT6890_POWER_DOMAIN_PEXTP_R_1LX2_1P_PHY] = {
+		.name = "pextp_r_1lx2_1p_phy",
+		.sta_mask = BIT(6),
+		.ctl_offs = 0x318,
+	},
+};
+
+
+static const struct scp_subdomain scp_subdomain_mt6890[] = {
+	{MT6890_POWER_DOMAIN_PEXTP_D_2LX1_PHY, MT6890_POWER_DOMAIN_PEXTP_D_2LX1},
+	{MT6890_POWER_DOMAIN_PEXTP_R_2LX1_PHY, MT6890_POWER_DOMAIN_PEXTP_R_2LX1},
+	{MT6890_POWER_DOMAIN_PEXTP_R_1LX2_0P_PHY, MT6890_POWER_DOMAIN_PEXTP_R_1LX2},
+	{MT6890_POWER_DOMAIN_SSUSB_PHY, MT6890_POWER_DOMAIN_SSUSB},
+	{MT6890_POWER_DOMAIN_SGMII_0_PHY, MT6890_POWER_DOMAIN_SGMII_0_TOP},
+	{MT6890_POWER_DOMAIN_SGMII_1_PHY, MT6890_POWER_DOMAIN_SGMII_1_TOP},
+};
+
+
+static const struct scp_soc_data mt6779_data = {
+	.domains = scp_domain_data_mt6779,
+	.num_domains = ARRAY_SIZE(scp_domain_data_mt6779),
+	.subdomains = scp_subdomain_mt6779,
+	.num_subdomains = ARRAY_SIZE(scp_subdomain_mt6779),
+	.regs = {
+		.pwr_sta_offs = SPM_PWR_STATUS_MT6779,
+		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND_MT6779
+	},
+	.bus_prot_reg_update = true,
+};
+
+
+static const struct scp_soc_data mt6880_data = {
+	.domains = scp_domain_data_mt6880,
+	.num_domains = ARRAY_SIZE(scp_domain_data_mt6880),
+	.subdomains = scp_subdomain_mt6880,
+	.num_subdomains = ARRAY_SIZE(scp_subdomain_mt6880),
+	.regs = {
+		.pwr_sta_offs = 0x16C,
+		.pwr_sta2nd_offs = 0x170
+	}
+};
+
+
+static const struct scp_soc_data mt6890_data = {
+	.domains = scp_domain_data_mt6890,
+	.num_domains = ARRAY_SIZE(scp_domain_data_mt6890),
+	.subdomains = scp_subdomain_mt6890,
+	.num_subdomains = ARRAY_SIZE(scp_subdomain_mt6890),
+	.regs = {
+		.pwr_sta_offs = 0x16C,
+		.pwr_sta2nd_offs = 0x170
+	}
+};
+
+/* DOTY-MT6890-BOOT-P0-SCPSYS-END */
+
 static const struct scp_soc_data mt7622_data = {
 	.domains = scp_domain_data_mt7622,
 	.num_domains = ARRAY_SIZE(scp_domain_data_mt7622),
@@ -1004,6 +2531,19 @@ static const struct scp_soc_data mt8173_data = {
  */
 
 static const struct of_device_id of_scpsys_match_tbl[] = {
+	{
+		.compatible = "mediatek,mt6779-scpsys",
+		.data = &mt6779_data,
+	},
+	{
+		.compatible = "mediatek,mt6880-scpsys",
+		.data = &mt6880_data,
+	},
+	{
+		.compatible = "mediatek,mt6890-scpsys",
+		.data = &mt6890_data,
+	},
+
 	{
 		.compatible = "mediatek,mt2701-scpsys",
 		.data = &mt2701_data,

@@ -234,6 +234,11 @@ struct mtk_pin_soc {
 
 	/* Specific driver data */
 	void				*driver_data;
+	/* DOTY donor compat: MT6880 combo bias */
+	int (*bias_set_combo)(struct mtk_pinctrl *hw,
+	const struct mtk_pin_desc *desc, u32 pullup, u32 arg);
+	int (*bias_get_combo)(struct mtk_pinctrl *hw,
+	const struct mtk_pin_desc *desc, u32 *pullup, u32 *arg);
 };
 
 struct mtk_pinctrl {
@@ -298,5 +303,18 @@ int mtk_pinconf_adv_drive_set(struct mtk_pinctrl *hw,
 			      const struct mtk_pin_desc *desc, u32 arg);
 int mtk_pinconf_adv_drive_get(struct mtk_pinctrl *hw,
 			      const struct mtk_pin_desc *desc, u32 *val);
+
+
+/* DOTY donor compat: MT6880 pinctrl helper prototypes */
+int mtk_pinconf_bias_set_combo(struct mtk_pinctrl *hw,
+				const struct mtk_pin_desc *desc,
+				u32 pullup, u32 enable);
+int mtk_pinconf_bias_get_combo(struct mtk_pinctrl *hw,
+			      const struct mtk_pin_desc *desc,
+			      u32 *pullup, u32 *enable);
+int mtk_pinconf_drive_set_raw(struct mtk_pinctrl *hw,
+			       const struct mtk_pin_desc *desc, u32 arg);
+int mtk_pinconf_drive_get_raw(struct mtk_pinctrl *hw,
+			       const struct mtk_pin_desc *desc, int *val);
 
 #endif /* __PINCTRL_MTK_COMMON_V2_H */

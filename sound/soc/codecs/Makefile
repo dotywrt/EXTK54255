@@ -563,3 +563,18 @@ obj-$(CONFIG_SND_SOC_MAX9877)	+= snd-soc-max9877.o
 obj-$(CONFIG_SND_SOC_MAX98504)	+= snd-soc-max98504.o
 obj-$(CONFIG_SND_SOC_SIMPLE_AMPLIFIER)	+= snd-soc-simple-amplifier.o
 obj-$(CONFIG_SND_SOC_TPA6130A2)	+= snd-soc-tpa6130a2.o
+
+# DOTY-AW1000-STAGE3: rule restored from local 4.19 donor
+obj-$(CONFIG_SND_SOC_MT6359)	+= snd-soc-mt6359.o
+
+# DOTY-AW1000-STAGE3: rule restored from local 4.19 donor
+obj-$(CONFIG_SND_SOC_NAU88C22)   += snd-soc-nau88c22.o
+
+# DOTY-AW1000-STAGE3: rule restored from local 4.19 donor
+obj-$(CONFIG_SND_SOC_PROSLIC)	+= proslic/
+
+# DOTY-AW1000-STAGE3: NAU88C22 composite object from donor
+snd-soc-nau88c22-objs := fibo_nau88c22.o
+
+# DOTY-MT6359-LINUX54: composite rule restored from donor
+snd-soc-mt6359-objs := mt6359.o

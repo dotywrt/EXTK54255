@@ -135,6 +135,9 @@ struct fb_cursor_user {
 
 /*      A display blank is requested       */
 #define FB_EVENT_BLANK                  0x09
+/* MediaTek/vendor early blank notifier compatibility */
+#define FB_EARLY_EVENT_BLANK            0x10
+#define FB_R_EARLY_EVENT_BLANK          0x11
 
 struct fb_event {
 	struct fb_info *info;

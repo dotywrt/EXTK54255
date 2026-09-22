@@ -5,3 +5,6 @@
 obj-$(CONFIG_TEGRA_HOST1X)	+= host1x/
 obj-y			+= drm/ vga/
 obj-$(CONFIG_IMX_IPUV3_CORE)	+= ipu-v3/
+
+# DOTY MT6890 parent Kbuild closure v10: drivers/gpu -> MediaTek GPU subtree
+obj-y += mediatek/

@@ -418,3 +418,7 @@ config UNIPHIER_THERMAL
 	  thermal framework. The driver supports CPU thermal zone temperature
 	  reporting and a couple of trip points.
 endif
+
+
+# DOTY MT6890 vendor Kconfig provider
+source "drivers/thermal/mediatek/Kconfig"

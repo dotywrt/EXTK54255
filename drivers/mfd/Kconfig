@@ -2014,3 +2014,31 @@ config RAVE_SP_CORE
 
 endmenu
 endif
+
+# Ported from MT6890 Linux 4.19
+config MTK_MFD_SPMI_PMIC
+	tristate "Mediatek SPMI PMICs"
+	depends on OF
+	depends on SPMI
+	select REGMAP_SPMI
+	help
+	  This enables support for the Mediatek SPMI PMICs.
+	  These PMICs are currently used with the MT63xx series of
+	  SoCs.  Note, that this will only be useful paired with descriptions
+	  of the independent functions as children nodes in the device tree.
+
+	  Say M here if you want to include support for the SPMI PMIC
+	  series as a module.  The module will be called "mtk-spmi-pmic".
+
+# DOTY-VENDOR-BOOT-PARITY MFD_MT6330 BEGIN
+config MFD_MT6330
+	tristate "MediaTek MT6330 PMIC Support"
+	select MFD_CORE
+	select IRQ_DOMAIN
+	help
+	  Say yes here to add support for MediaTek MT6330 PMIC. This is
+	  a Power Management IC. This driver provides common support for
+	  accessing the device by SPMI communication;
+	  additional drivers must be enabled in order to use the
+	  functionality of the device.
+# DOTY-VENDOR-BOOT-PARITY MFD_MT6330 END

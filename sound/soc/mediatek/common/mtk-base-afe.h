@@ -31,6 +31,32 @@ struct mtk_base_memif_data {
 	int msb_shift;
 	int agent_disable_reg;
 	int agent_disable_shift;
+
+	/* DOTY-MT6880-STRUCT-SYNC-mtk_base_memif_data-BEGIN */
+	/* Exact member declarations restored from vendor Linux 4.19. */
+	/* reg_ofs_end */
+	int reg_ofs_end;
+	/* reg_ofs_base_msb */
+	int reg_ofs_base_msb;
+	/* reg_ofs_cur_msb */
+	int reg_ofs_cur_msb;
+	/* reg_ofs_end_msb */
+	int reg_ofs_end_msb;
+	/* pbuf_reg */
+	int pbuf_reg;
+	/* pbuf_mask_shift */
+	int pbuf_mask_shift;
+	/* pbuf_shift */
+	int pbuf_shift;
+	/* minlen_reg */
+	int minlen_reg;
+	/* minlen_mask_shift */
+	int minlen_mask_shift;
+	/* minlen_shift */
+	int minlen_shift;
+	/* mono_invert */
+	int mono_invert;
+	/* DOTY-MT6880-STRUCT-SYNC-mtk_base_memif_data-END */
 };
 
 struct mtk_base_irq_data {
@@ -45,6 +71,18 @@ struct mtk_base_irq_data {
 	int irq_en_shift;
 	int irq_clr_reg;
 	int irq_clr_shift;
+
+	/* DOTY-MT6880-STRUCT-SYNC-mtk_base_irq_data-BEGIN */
+	/* Exact member declarations restored from vendor Linux 4.19. */
+	/* irq_ap_en_reg */
+	int irq_ap_en_reg;
+	/* irq_ap_en_shift */
+	int irq_ap_en_shift;
+	/* irq_scp_en_reg */
+	int irq_scp_en_reg;
+	/* irq_scp_en_shift */
+	int irq_scp_en_shift;
+	/* DOTY-MT6880-STRUCT-SYNC-mtk_base_irq_data-END */
 };
 
 struct device;
@@ -86,6 +124,29 @@ struct mtk_base_afe {
 		      unsigned int rate);
 
 	void *platform_priv;
+
+	/* DOTY-MTK-AFE-DEBUG-COMPAT-BEGIN */
+	/* Exact member declarations restored from vendor Linux 4.19. */
+	/* debug_cmds */
+	const struct mtk_afe_debug_cmd *debug_cmds;
+	/* DOTY-MTK-AFE-DEBUG-COMPAT-END */
+
+	/* DOTY-MT6880-STRUCT-SYNC-mtk_base_afe-BEGIN */
+	/* Exact member declarations restored from vendor Linux 4.19. */
+	/* sram */
+	void *sram;
+	/* get_dai_fs */
+	int (*get_dai_fs)(struct mtk_base_afe *afe,
+			  int dai_id, unsigned int rate);
+	/* get_memif_pbuf_size */
+	int (*get_memif_pbuf_size)(struct snd_pcm_substream *substream);
+	/* request_dram_resource */
+	int (*request_dram_resource)(struct device *dev);
+	/* release_dram_resource */
+	int (*release_dram_resource)(struct device *dev);
+	/* debugfs */
+	struct dentry *debugfs;
+	/* DOTY-MT6880-STRUCT-SYNC-mtk_base_afe-END */
 };
 
 struct mtk_base_afe_memif {
@@ -95,6 +156,22 @@ struct mtk_base_afe_memif {
 	const struct mtk_base_memif_data *data;
 	int irq_usage;
 	int const_irq;
+
+	/* DOTY-MT6880-STRUCT-SYNC-mtk_base_afe_memif-BEGIN */
+	/* Exact member declarations restored from vendor Linux 4.19. */
+	/* ack */
+	int (*ack)(struct snd_pcm_substream *substream);
+	/* ack_enable */
+	bool ack_enable;
+	/* use_dram_only */
+	int use_dram_only;
+	/* DOTY-MT6880-STRUCT-SYNC-mtk_base_afe_memif-END */
+
+	/* DOTY-MTK-MEMIF-DMA-LINUX54-BEGIN */
+	unsigned char *dma_area;
+	dma_addr_t dma_addr;
+	size_t dma_bytes;
+	/* DOTY-MTK-MEMIF-DMA-LINUX54-END */
 };
 
 struct mtk_base_afe_irq {

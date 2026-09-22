@@ -31,3 +31,6 @@ obj-$(CONFIG_MIPS_CPS_CPUIDLE)		+= cpuidle-cps.o
 # POWERPC drivers
 obj-$(CONFIG_PSERIES_CPUIDLE)		+= cpuidle-pseries.o
 obj-$(CONFIG_POWERNV_CPUIDLE)		+= cpuidle-powernv.o
+
+# DOTY FULL PARITY v3 ARM_MTK_NEW_ARCH_CPUIDLE
+obj-$(CONFIG_ARM_MTK_NEW_ARCH_CPUIDLE) += cpuidle-mediatek.o

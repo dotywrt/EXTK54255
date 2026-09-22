@@ -86,3 +86,19 @@ endif
 obj-$(CONFIG_QRTR)		+= qrtr/
 obj-$(CONFIG_NET_NCSI)		+= ncsi/
 obj-$(CONFIG_XDP_SOCKETS)	+= xdp/
+
+
+
+
+
+
+
+
+
+
+
+# BEGIN MT6890 NATIVE HW NAT HOOK
+ifeq ($(CONFIG_HW_NAT),y)
+obj-y				+= nat/foe_hook/
+endif
+# END MT6890 NATIVE HW NAT HOOK

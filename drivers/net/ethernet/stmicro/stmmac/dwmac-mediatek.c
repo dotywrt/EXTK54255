@@ -40,6 +40,12 @@
 #define ETH_FINE_DLY_GTXC	BIT(1)
 #define ETH_FINE_DLY_RXC	BIT(0)
 
+/* DOTY MT2735 GMAC register glue from vendor donor. */
+#define MT2735_PERI_ETH_CTRL1		0xfd0
+#define MT2735_ETH_INTF_SEL		GENMASK(26, 24)
+#define MT2735_ETH_CLK_SEL		BIT(22)
+#define MT2735_ETH_PHY_SEL		BIT(21)
+
 struct mac_delay_struct {
 	u32 tx_delay;
 	u32 rx_delay;
@@ -74,6 +80,11 @@ struct mediatek_dwmac_variant {
 /* list of clocks required for mac */
 static const char * const mt2712_dwmac_clk_l[] = {
 	"axi", "apb", "mac_main", "ptp_ref"
+};
+
+/* DOTY MT2735 GMAC clocks from vendor donor. */
+static const char * const mt2735_dwmac_clk_l[] = {
+	"mac_main", "ptp_ref", "eth_cg", "eth_rmii", "dma"
 };
 
 static int mt2712_set_interface(struct mediatek_dwmac_plat_data *plat)
@@ -210,6 +221,52 @@ static const struct mediatek_dwmac_variant mt2712_gmac_variant = {
 		.dma_bit_mask = 33,
 		.rx_delay_max = 17600,
 		.tx_delay_max = 17600,
+};
+
+/* DOTY MT2735 GMAC PHY-interface setup; minimum vendor closure. */
+static int mt2735_set_interface(struct mediatek_dwmac_plat_data *plat)
+{
+	u32 intf_val = 0;
+
+	regmap_read(plat->peri_regmap, MT2735_PERI_ETH_CTRL1, &intf_val);
+
+	switch (plat->phy_mode) {
+	case PHY_INTERFACE_MODE_MII:
+	case PHY_INTERFACE_MODE_RMII:
+		intf_val &= ~MT2735_ETH_CLK_SEL;
+		break;
+	case PHY_INTERFACE_MODE_RGMII:
+	case PHY_INTERFACE_MODE_RGMII_TXID:
+	case PHY_INTERFACE_MODE_RGMII_RXID:
+	case PHY_INTERFACE_MODE_RGMII_ID:
+		intf_val &= ~MT2735_ETH_INTF_SEL;
+		intf_val |= FIELD_PREP(MT2735_ETH_INTF_SEL, PHY_INTF_RGMII);
+		break;
+	case PHY_INTERFACE_MODE_SGMII:
+		intf_val &= ~MT2735_ETH_PHY_SEL;
+		break;
+	default:
+		dev_err(plat->dev, "phy interface not supported\n");
+		return -EINVAL;
+	}
+
+	regmap_write(plat->peri_regmap, MT2735_PERI_ETH_CTRL1, intf_val);
+	return 0;
+}
+
+static int mt2735_set_delay(struct mediatek_dwmac_plat_data *plat)
+{
+	return 0;
+}
+
+static const struct mediatek_dwmac_variant mt2735_gmac_variant = {
+	.dwmac_set_phy_interface = mt2735_set_interface,
+	.dwmac_set_delay = mt2735_set_delay,
+	.clk_list = mt2735_dwmac_clk_l,
+	.num_clks = ARRAY_SIZE(mt2735_dwmac_clk_l),
+	.dma_bit_mask = 32,
+	.rx_delay_max = 2800,
+	.tx_delay_max = 2800,
 };
 
 static int mediatek_dwmac_config_dt(struct mediatek_dwmac_plat_data *plat)
@@ -375,6 +432,8 @@ static int mediatek_dwmac_probe(struct platform_device *pdev)
 static const struct of_device_id mediatek_dwmac_match[] = {
 	{ .compatible = "mediatek,mt2712-gmac",
 	  .data = &mt2712_gmac_variant },
+	{ .compatible = "mediatek,mt2735-gmac",
+	  .data = &mt2735_gmac_variant },
 	{ }
 };
 

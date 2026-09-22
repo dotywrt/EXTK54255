@@ -18,7 +18,15 @@
 #include <linux/tcp.h>
 #include <linux/interrupt.h>
 #include <linux/pinctrl/devinfo.h>
+#include <linux/pinctrl/consumer.h>
+#include <linux/of_platform.h>
+#include <linux/mdio.h>
 #include <linux/phylink.h>
+#include <linux/fs.h>
+#include <linux/device.h>
+#include <linux/uaccess.h>
+#include <linux/atomic.h>
+#include <linux/sched.h>
 
 #include "mtk_eth_soc.h"
 
@@ -52,7 +60,9 @@ static const char * const mtk_clks_source_name[] = {
 	"ethif", "sgmiitop", "esw", "gp0", "gp1", "gp2", "fe", "trgpll",
 	"sgmii_tx250m", "sgmii_rx250m", "sgmii_cdr_ref", "sgmii_cdr_fb",
 	"sgmii2_tx250m", "sgmii2_rx250m", "sgmii2_cdr_ref", "sgmii2_cdr_fb",
-	"sgmii_ck", "eth2pll",
+	"sgmii_ck", "eth2pll", "net_sel", "med_sel", "net_500_sel",
+	"med_mcu_sel", "wed_mcu_sel", "net_2x_sel", "sgmii_sel",
+	"sgmii_sbus_sel",
 };
 
 void mtk_w32(struct mtk_eth *eth, u32 val, unsigned reg)
@@ -111,6 +121,71 @@ static u32 _mtk_mdio_write(struct mtk_eth *eth, u32 phy_addr,
 	return 0;
 }
 
+static u32 mtk_mdio_cl45_set_address(struct mtk_eth *eth, u32 port_num,
+				     u32 devad, u32 reg_addr)
+{
+	u32 data;
+
+	data = (devad << 25) | (port_num << 20) | reg_addr;
+	mtk_w32(eth, data, MTK_PHY_IAC);
+	mtk_w32(eth, data | PHY_IAC_ACCESS, MTK_PHY_IAC);
+
+	return 0;
+}
+
+static u32 _mtk_mdio_read_c45(struct mtk_eth *eth, u32 phy_addr,
+			      u32 phy_register, u32 devad)
+{
+	u32 data;
+
+	if (mtk_mdio_busy_wait(eth))
+		return 0xffff;
+
+	mtk_mdio_cl45_set_address(eth, phy_addr, devad, phy_register);
+
+	if (mtk_mdio_busy_wait(eth))
+		return 0xffff;
+
+	data = (devad << PHY_IAC_REG_SHIFT) |
+	       (phy_addr << PHY_IAC_ADDR_SHIFT) |
+	       (0x03 << MDIO_CMD) | phy_register;
+
+	mtk_w32(eth, data, MTK_PHY_IAC);
+	mtk_w32(eth, data | PHY_IAC_ACCESS, MTK_PHY_IAC);
+
+	if (mtk_mdio_busy_wait(eth))
+		return 0xffff;
+
+	return mtk_r32(eth, MTK_PHY_IAC) & 0xffff;
+}
+
+static u32 _mtk_mdio_write_c45(struct mtk_eth *eth, u32 phy_addr,
+			       u32 phy_register, u32 write_data, u32 devad)
+{
+	u32 data;
+
+	if (mtk_mdio_busy_wait(eth))
+		return -1;
+
+	write_data &= 0xffff;
+	mtk_mdio_cl45_set_address(eth, phy_addr, devad, phy_register);
+
+	if (mtk_mdio_busy_wait(eth))
+		return -1;
+
+	data = (devad << PHY_IAC_REG_SHIFT) |
+	       (phy_addr << PHY_IAC_ADDR_SHIFT) |
+	       PHY_IAC_WRITE | write_data;
+
+	mtk_w32(eth, data, MTK_PHY_IAC);
+	mtk_w32(eth, data | PHY_IAC_ACCESS, MTK_PHY_IAC);
+
+	if (mtk_mdio_busy_wait(eth))
+		return -1;
+
+	return 0;
+}
+
 static u32 _mtk_mdio_read(struct mtk_eth *eth, int phy_addr, int phy_reg)
 {
 	u32 d;
@@ -135,6 +210,13 @@ static int mtk_mdio_write(struct mii_bus *bus, int phy_addr,
 			  int phy_reg, u16 val)
 {
 	struct mtk_eth *eth = bus->priv;
+	int devad;
+
+	if (phy_reg & MII_ADDR_C45) {
+		devad = (phy_reg >> 16) & 0x1f;
+		return _mtk_mdio_write_c45(eth, phy_addr, phy_reg & 0xffff,
+					   val, devad);
+	}
 
 	return _mtk_mdio_write(eth, phy_addr, phy_reg, val);
 }
@@ -142,8 +224,185 @@ static int mtk_mdio_write(struct mii_bus *bus, int phy_addr,
 static int mtk_mdio_read(struct mii_bus *bus, int phy_addr, int phy_reg)
 {
 	struct mtk_eth *eth = bus->priv;
+	int devad;
+
+	if (phy_reg & MII_ADDR_C45) {
+		devad = (phy_reg >> 16) & 0x1f;
+		return _mtk_mdio_read_c45(eth, phy_addr, phy_reg & 0xffff,
+					  devad);
+	}
 
 	return _mtk_mdio_read(eth, phy_addr, phy_reg);
+}
+
+
+struct fg360_phy_mapping {
+	const char *name;
+	u16 mac_number;
+	u16 phy_exist;
+	u32 mac_gen;
+	u32 phy_id;
+};
+
+static struct fg360_phy_mapping fg360_def_phy_mapping[] = {
+	{ "aqr112c",   0, 0, 0, 0x03a1b792 },
+	{ "mt7531AE",  1, 0, 0, 0x0000181d },
+	{ "rtl8221b",  0, 0, 0, 0x001cc849 },
+	{ "rtl8211fs", 1, 0, 1, 0x001cc916 },
+};
+
+static struct fg360_phy_mapping fg360_mac_phy_mapping[MTK_MAC_COUNT];
+
+static int fg360_phy_find_exist(struct device_node *np)
+{
+	const char *map;
+	int i;
+
+	if (of_property_read_string(np, "fg360,phy_name", &map))
+		return 0;
+
+	for (i = 0; i < ARRAY_SIZE(fg360_def_phy_mapping); i++) {
+		if (strcmp(map, fg360_def_phy_mapping[i].name))
+			continue;
+
+		if (fg360_def_phy_mapping[i].phy_exist)
+			memcpy(&fg360_mac_phy_mapping[
+			       fg360_def_phy_mapping[i].mac_number & 1],
+			       &fg360_def_phy_mapping[i],
+			       sizeof(struct fg360_phy_mapping));
+
+		return fg360_def_phy_mapping[i].phy_exist;
+	}
+
+	return 0;
+}
+
+static int fg360_get_node_mac_id(struct device_node *np)
+{
+	const __be32 *idp = of_get_property(np, "reg", NULL);
+	int id;
+
+	if (!idp)
+		return -EINVAL;
+
+	id = be32_to_cpup(idp);
+	if (id >= MTK_MAC_COUNT)
+		return -EINVAL;
+
+	return id;
+}
+
+int get_gmac1_mode(void)
+{
+	return fg360_mac_phy_mapping[1].mac_gen;
+}
+
+static int fg360_get_gmac_phy_status(int mac_number)
+{
+	return fg360_mac_phy_mapping[mac_number & 1].phy_exist;
+}
+
+static int fg360_get_phy_id(struct mtk_eth *eth, int addr, u32 *phy_id,
+			    bool is_c45)
+{
+	int phy_reg;
+
+	if (is_c45)
+		phy_reg = _mtk_mdio_read_c45(eth, addr, MII_PHYSID1, 1);
+	else
+		phy_reg = _mtk_mdio_read(eth, addr, MII_PHYSID1);
+
+	if (phy_reg < 0 || phy_reg == 0xffff) {
+		*phy_id = 0xffffffff;
+		return 0;
+	}
+
+	*phy_id = (phy_reg & 0xffff) << 16;
+
+	if (is_c45)
+		phy_reg = _mtk_mdio_read_c45(eth, addr, MII_PHYSID2, 1);
+	else
+		phy_reg = _mtk_mdio_read(eth, addr, MII_PHYSID2);
+
+	if (phy_reg < 0 || phy_reg == 0xffff) {
+		*phy_id = 0xffffffff;
+		return 0;
+	}
+
+	*phy_id |= phy_reg & 0xffff;
+	return 0;
+}
+
+static void fg360_scan_phy_ids(struct mtk_eth *eth, bool is_c45)
+{
+	u32 phy_id;
+	int i, j;
+
+	for (i = 0; i < PHY_MAX_ADDR; i++) {
+		phy_id = 0xffffffff;
+		fg360_get_phy_id(eth, i, &phy_id, is_c45);
+
+		for (j = 0; j < ARRAY_SIZE(fg360_def_phy_mapping); j++) {
+			if (phy_id != fg360_def_phy_mapping[j].phy_id)
+				continue;
+
+			fg360_def_phy_mapping[j].phy_exist = 1;
+			dev_info(eth->dev,
+				 "FG360 PHY detected: %s addr=%d id=0x%08x%s\n",
+				 fg360_def_phy_mapping[j].name, i, phy_id,
+				 is_c45 ? " C45" : " C22");
+		}
+	}
+}
+
+static void fg360_prepare_reset_gpio(struct mtk_eth *eth,
+				     struct device_node *np,
+				     const char *property,
+				     const char *label)
+{
+	int gpio, ret;
+
+	gpio = of_get_named_gpio(np, property, 0);
+	if (!gpio_is_valid(gpio))
+		return;
+
+	ret = devm_gpio_request(eth->dev, gpio, label);
+	if (ret) {
+		dev_warn(eth->dev, "cannot request %s GPIO %d: %d\n",
+			 property, gpio, ret);
+		return;
+	}
+
+	gpio_direction_output(gpio, 1);
+	msleep(30);
+	gpio_set_value(gpio, 1);
+	msleep(500);
+	devm_gpio_free(eth->dev, gpio);
+}
+
+static int fg360_auto_scan_phy(struct mtk_eth *eth)
+{
+	struct device_node *mii_np;
+	int i;
+
+	mii_np = of_get_child_by_name(eth->dev->of_node, "mdio-bus");
+	if (!mii_np)
+		return -ENODEV;
+
+	for (i = 0; i < ARRAY_SIZE(fg360_def_phy_mapping); i++)
+		fg360_def_phy_mapping[i].phy_exist = 0;
+	memset(fg360_mac_phy_mapping, 0, sizeof(fg360_mac_phy_mapping));
+
+	fg360_prepare_reset_gpio(eth, mii_np, "phy1reset-gpios",
+				 "fg360-phy1-reset");
+	fg360_prepare_reset_gpio(eth, mii_np, "phy2reset-gpios",
+				 "fg360-phy2-reset");
+
+	fg360_scan_phy_ids(eth, false);
+	fg360_scan_phy_ids(eth, true);
+
+	of_node_put(mii_np);
+	return 0;
 }
 
 static int mt7621_gmac0_rgmii_adjust(struct mtk_eth *eth,
@@ -332,8 +591,9 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
 		sid = (MTK_HAS_CAPS(eth->soc->caps, MTK_SHARED_SGMII)) ?
 		       0 : mac->id;
 
-		/* Setup SGMIISYS with the determined property */
-		if (state->interface != PHY_INTERFACE_MODE_SGMII)
+		if (MTK_HAS_CAPS(eth->soc->caps, MTK_SGMII_PHY))
+			err = mtk_sgmii_setup_mode_force(eth->sgmii, sid, state);
+		else if (state->interface != PHY_INTERFACE_MODE_SGMII)
 			err = mtk_sgmii_setup_mode_force(eth->sgmii, sid,
 							 state);
 		else if (phylink_autoneg_inband(mode))
@@ -2410,7 +2670,8 @@ static int mtk_hw_init(struct mtk_eth *eth)
 	}
 
 	/* Non-MT7628 handling... */
-	ethsys_reset(eth, RSTCTRL_FE);
+	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_SGMII_PHY))
+		ethsys_reset(eth, RSTCTRL_FE);
 	ethsys_reset(eth, RSTCTRL_PPE);
 
 	if (eth->pctl) {
@@ -2928,6 +3189,254 @@ free_netdev:
 	return err;
 }
 
+static void mtk_mt6890_select_eth_pinctrl(struct device *dev)
+{
+	struct pinctrl_state *state;
+	struct pinctrl *pctl;
+
+	pctl = devm_pinctrl_get(dev);
+	if (IS_ERR(pctl))
+		return;
+
+	state = pinctrl_lookup_state(pctl, "eth_smi_mdio_pinctl");
+	if (!IS_ERR(state))
+		pinctrl_select_state(pctl, state);
+
+	state = pinctrl_lookup_state(pctl, "eth_smi_mdc_pinctl");
+	if (!IS_ERR(state))
+		pinctrl_select_state(pctl, state);
+}
+
+static void mtk_mt6890_power_one_domain(struct device *dev,
+					const char *compatible)
+{
+	struct platform_device *pd_pdev;
+	struct device_node *np;
+	int ret;
+
+	np = of_find_compatible_node(NULL, NULL, compatible);
+	if (!np)
+		return;
+
+	pd_pdev = of_find_device_by_node(np);
+	of_node_put(np);
+	if (!pd_pdev)
+		return;
+
+	if (!pm_runtime_enabled(&pd_pdev->dev))
+		pm_runtime_enable(&pd_pdev->dev);
+
+	ret = pm_runtime_get_sync(&pd_pdev->dev);
+	if (ret < 0)
+		pm_runtime_put_noidle(&pd_pdev->dev);
+}
+
+static void mtk_mt6890_prepare_hw(struct mtk_eth *eth)
+{
+	struct regmap *wo;
+
+	mtk_mt6890_select_eth_pinctrl(eth->dev);
+
+	mtk_mt6890_power_one_domain(eth->dev, "mediatek,colgin-sgmiisys_0");
+	mtk_mt6890_power_one_domain(eth->dev, "mediatek,colgin-sgmiisys_1");
+	mtk_mt6890_power_one_domain(eth->dev, "mediatek,colgin-sgmiisys_phy_0");
+	mtk_mt6890_power_one_domain(eth->dev, "mediatek,colgin-sgmiisys_phy_1");
+
+	wo = syscon_regmap_lookup_by_phandle(eth->dev->of_node, "mediatek,wo");
+	if (!IS_ERR(wo)) {
+		regmap_write(wo, 0x70, 0xb);
+		regmap_write(wo, 0x74, 0xb);
+	}
+}
+
+/* DOTY-AW1000-MDIO-COMPAT-BEGIN */
+/*
+ * Fibocom AQRD vendor ABI compatibility.
+ * Userspace passes this exact 9 x u32 structure through read()/write().
+ */
+#define AW1000_MDIO_DEVICE_NAME "mdio_ops"
+#define AW1000_MDIO_APP_NAME    "aqrd"
+
+struct aw1000_fibo_mii_data {
+	u32 phy_id;
+	u32 reg_num;
+	u32 val_in;
+	u32 val_out;
+	u32 port_num;
+	u32 dev_addr;
+	u32 reg_addr;
+	u32 mode;
+	u32 debug_flag;
+};
+
+static struct mtk_eth *aw1000_mdio_eth;
+static int aw1000_mdio_major = -1;
+static struct class *aw1000_mdio_class;
+static struct device *aw1000_mdio_device;
+static atomic_t aw1000_mdio_usage = ATOMIC_INIT(0);
+
+static ssize_t aw1000_mdio_read(struct file *file, char __user *buf,
+				size_t len, loff_t *offset)
+{
+	struct aw1000_fibo_mii_data mii;
+	struct mtk_eth *eth = READ_ONCE(aw1000_mdio_eth);
+	int ret;
+
+	if (!eth || !eth->mii_bus)
+		return -ENODEV;
+	if (len < sizeof(mii))
+		return -EINVAL;
+	if (copy_from_user(&mii, buf, sizeof(mii)))
+		return -EFAULT;
+
+	mutex_lock(&eth->mii_bus->mdio_lock);
+	if (mii.mode == 45) {
+		mii.val_out = _mtk_mdio_read_c45(eth, mii.port_num,
+						mii.reg_addr, mii.dev_addr);
+		ret = 0;
+	} else if (mii.mode == 22) {
+		mii.val_out = mtk_mdio_read(eth->mii_bus,
+					mii.port_num, mii.reg_addr);
+		ret = 0;
+	} else {
+		ret = -EINVAL;
+	}
+	mutex_unlock(&eth->mii_bus->mdio_lock);
+
+	if (ret)
+		return ret;
+	if (copy_to_user(buf, &mii, sizeof(mii)))
+		return -EFAULT;
+
+	/* Preserve original Fibocom ABI: userspace reads modified input buffer. */
+	return 0;
+}
+
+static ssize_t aw1000_mdio_write(struct file *file, const char __user *buf,
+				 size_t count, loff_t *pos)
+{
+	struct aw1000_fibo_mii_data mii;
+	struct mtk_eth *eth = READ_ONCE(aw1000_mdio_eth);
+	int ret;
+
+	if (!eth || !eth->mii_bus)
+		return -ENODEV;
+	if (count < sizeof(mii))
+		return -EINVAL;
+	if (copy_from_user(&mii, buf, sizeof(mii)))
+		return -EFAULT;
+
+	mutex_lock(&eth->mii_bus->mdio_lock);
+	if (mii.mode == 45) {
+		mii.val_out = _mtk_mdio_write_c45(eth, mii.port_num,
+						 mii.reg_addr, mii.val_in,
+						 mii.dev_addr);
+		ret = (int)mii.val_out;
+	} else if (mii.mode == 22) {
+		ret = mtk_mdio_write(eth->mii_bus, mii.port_num,
+				     mii.reg_addr, (u16)mii.val_in);
+		mii.val_out = ret;
+	} else {
+		ret = -EINVAL;
+	}
+	mutex_unlock(&eth->mii_bus->mdio_lock);
+
+	if (ret < 0)
+		return ret;
+
+	/* Preserve original Fibocom ABI. */
+	return 0;
+}
+
+static int aw1000_mdio_open(struct inode *inode, struct file *file)
+{
+	if (strcmp(current->comm, AW1000_MDIO_APP_NAME))
+		return -EPERM;
+	if (atomic_cmpxchg(&aw1000_mdio_usage, 0, 1) != 0)
+		return -EBUSY;
+	return 0;
+}
+
+static int aw1000_mdio_release(struct inode *inode, struct file *file)
+{
+	atomic_set(&aw1000_mdio_usage, 0);
+	return 0;
+}
+
+static const struct file_operations aw1000_mdio_fops = {
+	.owner = THIS_MODULE,
+	.open = aw1000_mdio_open,
+	.read = aw1000_mdio_read,
+	.write = aw1000_mdio_write,
+	.release = aw1000_mdio_release,
+	.llseek = no_llseek,
+};
+
+static int aw1000_mdio_compat_register(struct mtk_eth *eth)
+{
+	if (aw1000_mdio_major >= 0) {
+		WRITE_ONCE(aw1000_mdio_eth, eth);
+		return 0;
+	}
+
+	WRITE_ONCE(aw1000_mdio_eth, eth);
+	aw1000_mdio_major = register_chrdev(0, AW1000_MDIO_DEVICE_NAME,
+					     &aw1000_mdio_fops);
+	if (aw1000_mdio_major < 0)
+		goto err_clear;
+
+	aw1000_mdio_class = class_create(THIS_MODULE, AW1000_MDIO_DEVICE_NAME);
+	if (IS_ERR(aw1000_mdio_class)) {
+		int ret = PTR_ERR(aw1000_mdio_class);
+		aw1000_mdio_class = NULL;
+		unregister_chrdev(aw1000_mdio_major, AW1000_MDIO_DEVICE_NAME);
+		aw1000_mdio_major = -1;
+		WRITE_ONCE(aw1000_mdio_eth, NULL);
+		return ret;
+	}
+
+	aw1000_mdio_device = device_create(aw1000_mdio_class, eth->dev,
+		MKDEV(aw1000_mdio_major, 0), NULL, AW1000_MDIO_DEVICE_NAME);
+	if (IS_ERR(aw1000_mdio_device)) {
+		int ret = PTR_ERR(aw1000_mdio_device);
+		aw1000_mdio_device = NULL;
+		class_destroy(aw1000_mdio_class);
+		aw1000_mdio_class = NULL;
+		unregister_chrdev(aw1000_mdio_major, AW1000_MDIO_DEVICE_NAME);
+		aw1000_mdio_major = -1;
+		WRITE_ONCE(aw1000_mdio_eth, NULL);
+		return ret;
+	}
+
+	dev_info(eth->dev, "AW1000 Fibocom MDIO compatibility: /dev/%s ready\n",
+		 AW1000_MDIO_DEVICE_NAME);
+	return 0;
+
+err_clear:
+	WRITE_ONCE(aw1000_mdio_eth, NULL);
+	return aw1000_mdio_major;
+}
+
+static void aw1000_mdio_compat_unregister(struct mtk_eth *eth)
+{
+	if (aw1000_mdio_major < 0)
+		return;
+
+	if (aw1000_mdio_device) {
+		device_destroy(aw1000_mdio_class, MKDEV(aw1000_mdio_major, 0));
+		aw1000_mdio_device = NULL;
+	}
+	if (aw1000_mdio_class) {
+		class_destroy(aw1000_mdio_class);
+		aw1000_mdio_class = NULL;
+	}
+	unregister_chrdev(aw1000_mdio_major, AW1000_MDIO_DEVICE_NAME);
+	aw1000_mdio_major = -1;
+	atomic_set(&aw1000_mdio_usage, 0);
+	WRITE_ONCE(aw1000_mdio_eth, NULL);
+}
+/* DOTY-AW1000-MDIO-COMPAT-END */
+
 static int mtk_probe(struct platform_device *pdev)
 {
 	struct device_node *mac_np;
@@ -2981,6 +3490,9 @@ static int mtk_probe(struct platform_device *pdev)
 			return PTR_ERR(eth->infra);
 		}
 	}
+
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_SGMII_PHY))
+		mtk_mt6890_prepare_hw(eth);
 
 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_SGMII)) {
 		eth->sgmii = devm_kzalloc(eth->dev, sizeof(*eth->sgmii),
@@ -3038,18 +3550,56 @@ static int mtk_probe(struct platform_device *pdev)
 
 	eth->hwlro = MTK_HAS_CAPS(eth->soc->caps, MTK_HWLRO);
 
-	for_each_child_of_node(pdev->dev.of_node, mac_np) {
-		if (!of_device_is_compatible(mac_np,
-					     "mediatek,eth-mac"))
-			continue;
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_SGMII_PHY)) {
+		fg360_auto_scan_phy(eth);
 
-		if (!of_device_is_available(mac_np))
-			continue;
+		for_each_child_of_node(pdev->dev.of_node, mac_np) {
+			if (!of_device_is_compatible(mac_np, "mediatek,eth-mac"))
+				continue;
+			if (!of_device_is_available(mac_np))
+				continue;
+			if (!fg360_phy_find_exist(mac_np))
+				continue;
 
-		err = mtk_add_mac(eth, mac_np);
-		if (err) {
-			of_node_put(mac_np);
-			goto err_deinit_hw;
+			err = mtk_add_mac(eth, mac_np);
+			if (err) {
+				of_node_put(mac_np);
+				goto err_deinit_hw;
+			}
+		}
+
+		for_each_child_of_node(pdev->dev.of_node, mac_np) {
+			int id;
+
+			if (!of_device_is_compatible(mac_np, "mediatek,eth-mac_def"))
+				continue;
+			if (!of_device_is_available(mac_np))
+				continue;
+
+			id = fg360_get_node_mac_id(mac_np);
+			if (id < 0 || fg360_get_gmac_phy_status(id))
+				continue;
+
+			err = mtk_add_mac(eth, mac_np);
+			if (err) {
+				of_node_put(mac_np);
+				goto err_deinit_hw;
+			}
+		}
+	} else {
+		for_each_child_of_node(pdev->dev.of_node, mac_np) {
+			if (!of_device_is_compatible(mac_np,
+						     "mediatek,eth-mac"))
+				continue;
+
+			if (!of_device_is_available(mac_np))
+				continue;
+
+			err = mtk_add_mac(eth, mac_np);
+			if (err) {
+				of_node_put(mac_np);
+				goto err_deinit_hw;
+			}
 		}
 	}
 
@@ -3103,6 +3653,10 @@ static int mtk_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, eth);
 
+	err = aw1000_mdio_compat_register(eth);
+	if (err)
+		dev_warn(eth->dev, "failed to create /dev/mdio_ops: %d\n", err);
+
 	return 0;
 
 err_deinit_mdio:
@@ -3120,6 +3674,8 @@ static int mtk_remove(struct platform_device *pdev)
 	struct mtk_eth *eth = platform_get_drvdata(pdev);
 	struct mtk_mac *mac;
 	int i;
+
+	aw1000_mdio_compat_unregister(eth);
 
 	/* stop all devices to make sure that dma is properly shut down */
 	for (i = 0; i < MTK_MAC_COUNT; i++) {
@@ -3177,6 +3733,14 @@ static const struct mtk_soc_data mt7629_data = {
 	.required_pctl = false,
 };
 
+static const struct mtk_soc_data mt6890_data = {
+	.ana_rgc3 = 0x128,
+	.caps = MT6890_CAPS | MTK_HWLRO,
+	.hw_features = MTK_HW_FEATURES,
+	.required_clks = MT6890_CLKS_BITMAP,
+	.required_pctl = false,
+};
+
 static const struct mtk_soc_data rt5350_data = {
 	.caps = MT7628_CAPS,
 	.hw_features = MTK_HW_FEATURES_MT7628,
@@ -3190,6 +3754,7 @@ const struct of_device_id of_mtk_match[] = {
 	{ .compatible = "mediatek,mt7622-eth", .data = &mt7622_data},
 	{ .compatible = "mediatek,mt7623-eth", .data = &mt7623_data},
 	{ .compatible = "mediatek,mt7629-eth", .data = &mt7629_data},
+	{ .compatible = "mediatek,mt6890-eth", .data = &mt6890_data},
 	{ .compatible = "ralink,rt5350-eth", .data = &rt5350_data},
 	{},
 };

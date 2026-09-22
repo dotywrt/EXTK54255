@@ -548,4 +548,7 @@ static inline void printk_deferred_exit(void)
 }
 #endif
 
+/* MT6890 Linux 5.4: AEE watchdog lock provider */
+void aee_wdt_zap_locks(void);
+
 #endif

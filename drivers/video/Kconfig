@@ -48,3 +48,7 @@ endif
 
 
 endmenu
+
+
+# DOTY MT6890 vendor Kconfig provider
+source "drivers/gpu/mediatek/Kconfig"

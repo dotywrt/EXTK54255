@@ -163,6 +163,8 @@ struct mtk_gate {
 	int shift;
 	const struct clk_ops *ops;
 	unsigned long flags;
+	/* DOTY donor compat: MT6890 gate power status */
+	struct pwr_status *pwr_stat;
 };
 
 int mtk_clk_register_gates(struct device_node *node,
@@ -233,6 +235,11 @@ struct mtk_pll_data {
 	uint32_t pcw_chg_reg;
 	const struct mtk_pll_div_table *div_table;
 	const char *parent_name;
+	/* DOTY Linux5.4 compat: MT6890 vendor PLL fields */
+	uint32_t en_reg;
+	uint32_t iso_mask;
+	uint32_t pwron_mask;
+	uint32_t rst_bar_reg;
 };
 
 void mtk_clk_register_plls(struct device_node *node,
@@ -248,4 +255,7 @@ void mtk_register_reset_controller(struct device_node *np,
 void mtk_register_reset_controller_set_clr(struct device_node *np,
 	unsigned int num_regs, int regofs);
 
+
+/* DOTY MT6890 Stage-2C-A4 v2 vendor FHCTL ABI */
+extern bool (*mtk_fh_set_rate)(int pll_id, unsigned long dds, int postdiv);
 #endif /* __DRV_CLK_MTK_H */

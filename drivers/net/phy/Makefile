@@ -94,3 +94,9 @@ obj-$(CONFIG_STE10XP)		+= ste10Xp.o
 obj-$(CONFIG_TERANETICS_PHY)	+= teranetics.o
 obj-$(CONFIG_VITESSE_PHY)	+= vitesse.o
 obj-$(CONFIG_XILINX_GMII2RGMII) += xilinx_gmii2rgmii.o
+
+# MediaTek MT7530/MT7531 switch
+obj-$(CONFIG_MT753X_GSW) += mtk/mt753x/
+
+# DOTY FULL PARITY v3 SWCONFIG
+obj-$(CONFIG_SWCONFIG)		+= swconfig.o

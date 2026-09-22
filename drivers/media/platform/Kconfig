@@ -256,6 +256,19 @@ config VIDEO_MEDIATEK_VCODEC
 	    To compile this driver as a module, choose M here: the
 	    module will be called mtk-vcodec
 
+
+# DOTY MT6890 Stage-2C-B4 vendor vcodec DVFS selector
+config MEDIATEK_DVFS
+	tristate "Mediatek DVFS"
+	default n
+	help
+	  Mediatek DVFS is a config For Mediatek video codec
+	  driver to control open or close mtk-vcodec use DVFS
+	  Function or not.
+
+	  To close DVFS for mtk-vcodec, choose n here: the dvfs
+	  Function will close for mtk-vcodec
+
 config VIDEO_MEM2MEM_DEINTERLACE
 	tristate "Deinterlace support"
 	depends on VIDEO_DEV && VIDEO_V4L2
@@ -686,3 +699,16 @@ config VIDEO_RCAR_DRIF
 	  will be called rcar_drif.
 
 endif # SDR_PLATFORM_DRIVERS
+
+# DOTY KCONFIG SAFE v5 MEDIATEK_EMI_BW BEGIN
+config MEDIATEK_EMI_BW
+	tristate "Mediatek EMI BW"
+	default n
+	help
+	  This is EMI BW config For Mediatek video codec driver to
+	  control open or close mtk-vcodec use EMI BW Function or
+	  not.
+
+	  To close EMI BW for mtk-vcodec, choose n here: the EMI BW
+	  Function will close for mtk-vcodec
+# DOTY KCONFIG SAFE v5 MEDIATEK_EMI_BW END

@@ -49,3 +49,7 @@ obj-$(CONFIG_ARM64) += pci-thunder-ecam.o
 obj-$(CONFIG_ARM64) += pci-thunder-pem.o
 obj-$(CONFIG_ARM64) += pci-xgene.o
 endif
+
+# DOTY-VENDOR-BOOT-PARITY PCIE_MEDIATEK_GEN3 BEGIN
+obj-$(CONFIG_PCIE_MEDIATEK_GEN3) += pcie-mediatek-gen3.o
+# DOTY-VENDOR-BOOT-PARITY PCIE_MEDIATEK_GEN3 END

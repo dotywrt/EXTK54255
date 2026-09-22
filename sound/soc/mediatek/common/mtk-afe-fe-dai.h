@@ -34,4 +34,20 @@ int mtk_dynamic_irq_release(struct mtk_base_afe *afe, int irq_id);
 int mtk_afe_dai_suspend(struct snd_soc_dai *dai);
 int mtk_afe_dai_resume(struct snd_soc_dai *dai);
 
+
+/* DOTY-MTK-MEMIF-ENABLE-DISABLE-LINUX54-mtk_memif_set_enable-PROTOTYPE */
+int mtk_memif_set_enable(struct mtk_base_afe *afe, int id);
+
+/* DOTY-MTK-MEMIF-ENABLE-DISABLE-LINUX54-mtk_memif_set_disable-PROTOTYPE */
+int mtk_memif_set_disable(struct mtk_base_afe *afe, int id);
+
+/* DOTY-MTK-MEMIF-DMA-API-PROTOS-LINUX54-BEGIN */
+int mtk_memif_set_addr(struct mtk_base_afe *afe, int id,
+		       unsigned char *dma_area,
+		       dma_addr_t dma_addr,
+		       size_t dma_bytes);
+int mtk_memif_set_pbuf_size(struct mtk_base_afe *afe,
+			    int id, int pbuf_size);
+/* DOTY-MTK-MEMIF-DMA-API-PROTOS-LINUX54-END */
+
 #endif

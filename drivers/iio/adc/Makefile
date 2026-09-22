@@ -99,3 +99,6 @@ obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
 xilinx-xadc-y := xilinx-xadc-core.o xilinx-xadc-events.o
 obj-$(CONFIG_XILINX_XADC) += xilinx-xadc.o
 obj-$(CONFIG_SD_ADC_MODULATOR) += sd_adc_modulator.o
+
+# DOTY FULL PARITY v3 MEDIATEK_MT635X_AUXADC
+obj-$(CONFIG_MEDIATEK_MT635X_AUXADC) += mt635x-auxadc.o
